@@ -1,0 +1,17 @@
+﻿uid,username,full_name,division,clearance,home_ip,last_login,shell,status,mfa
+1042,h.granger,H. Granger,Department of Magical Law Enforcement,AUROR-II,10.20.4.19,2026-08-14T02:56:22Z,/bin/bash,active,yes
+1071,a.prewett,A. Prewett,Department of Mysteries / Records,ARCHIVIST-III,192.168.1.42,2026-08-14T02:29:17Z,/bin/bash,suspended,no
+1088,n.longbottom,N. Longbottom,Department of Magical Law Enforcement,AUROR-I,10.20.4.31,2026-08-14T01:52:48Z,/bin/bash,active,yes
+1099,svc.archive,SVC Archive (daemon),Improper Use of Magic Office,SERVICE,192.168.1.42,2026-08-14T03:05:02Z,/usr/sbin/nologin,active,no
+1103,m.edgecombe,M. Edgecombe,Department of Mysteries / Records,ARCHIVIST-II,10.20.4.77,2026-08-14T03:17:41Z,/bin/bash,active,yes
+1116,r.brocklehurst,R. Brocklehurst,Magical Maintenance,TECHNICIAN-I,10.20.4.58,2026-08-13T16:04:11Z,/bin/bash,active,yes
+1128,t.boot,T. Boot,Department of Mysteries / Records,ARCHIVIST-I,10.20.4.62,2026-08-12T09:41:03Z,/bin/sh,active,no
+1134,svc.backup,SVC Backup (daemon),Magical Maintenance,SERVICE,10.20.0.14,2026-08-14T00:00:07Z,/usr/sbin/nologin,active,no
+1147,d.abbott,D. Abbott,Department of Magical Law Enforcement,AUROR-III,10.20.4.85,2026-08-13T21:12:44Z,/bin/bash,active,yes
+1152,j.finchfletchley,J. Finch-Fletchley,Department of Magical Games and Sports,CLERK-I,10.20.4.91,2026-08-11T11:22:09Z,/bin/bash,active,no
+1163,p.parkinson,P. Parkinson,Department of Mysteries / Records,ARCHIVIST-II,10.20.4.73,2026-08-14T01:09:55Z,/bin/bash,active,no
+1171,g.weasley,G. Weasley,Magical Maintenance,TECHNICIAN-II,10.20.4.36,2026-08-13T18:37:21Z,/bin/bash,active,yes
+1188,svc.floo,SVC Floo (daemon),Department of Magical Transportation,SERVICE,10.20.0.9,2026-08-14T03:19:02Z,/usr/sbin/nologin,active,no
+1190,l.moon,L. Moon,Department of Mysteries / Records,ARCHIVIST-I,10.20.4.44,2026-08-10T08:15:31Z,/bin/bash,locked,yes
+1204,oracle,Oracle (legacy probe account),Unassigned,NONE,192.168.1.42,1970-01-01T00:00:00Z,/bin/false,disabled,no
+1211,vaultkeeper,Vaultkeeper (legacy role account),Unassigned,NONE,192.168.1.42,1970-01-01T00:00:00Z,/bin/false,disabled,no

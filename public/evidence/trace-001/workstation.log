@@ -1,0 +1,63 @@
+[2026-08-14 01:10:02] INFO  ward-daemon: boot sequence complete (pid=1182, uptime=0d 06:14:02)
+[2026-08-14 01:10:02] INFO  ward-daemon: sealing layer= Floo network policy v4.2 loaded (14 rules)
+[2026-08-14 01:10:03] INFO  ward-daemon: mounted /var/lib/pensieve/vault (ext4, ro=0, quota=on)
+[2026-08-14 01:10:03] INFO  ward-daemon: index manifest 4f7c…a91d verified (18841 records)
+[2026-08-14 01:12:44] INFO  session: h.granger shell=pts/0 uid=1042 clearance=AUROR-II
+[2026-08-14 01:14:02] INFO  session: h.granger escalated via sudo (target=root)
+[2026-08-14 01:26:18] WARN  auth: 5 failed authentications from 192.168.1.42 within 9s (user=oracle)
+[2026-08-14 01:26:33] WARN  auth: source 192.168.1.42 blocked by fail2ban (jail=sshd, bantime=0)
+[2026-08-14 01:34:52] WARN  auth: 3 failed authentications from 192.168.1.42 within 10s (user=archive)
+[2026-08-14 01:38:19] WARN  auth: 3 failed authentications from 192.168.1.42 within 9s (user=root)
+[2026-08-14 01:41:55] INFO  session: n.longbottom shell=pts/1 uid=1088 clearance=ARCHIVIST-I
+[2026-08-14 01:42:11] INFO  session: n.longbottom escalated via sudo (target=root)
+[2026-08-14 01:42:44] ERROR pensieve-index: apparmor denied exec /usr/bin/timeout (profile=pensieve-index)
+[2026-08-14 01:43:02] WARN  auth: password authentication accepted for a.prewett from 192.168.1.42
+[2026-08-14 01:43:02] INFO  session: a.prewett shell=pts/2 uid=1071 clearance=ARCHIVIST-III
+[2026-08-14 01:43:19] INFO  session: a.prewett escalated via sudo (target=root)
+[2026-08-14 01:43:47] WARN  ward-daemon: SIGKILL received from uid=0 (expected shutdown? NO)
+[2026-08-14 01:43:47] INFO  ward-daemon: unmounted /var/lib/pensieve/vault (clean)
+[2026-08-14 01:43:47] ERROR ward-daemon: no shutdown window scheduled — unscheduled termination
+[2026-08-14 01:44:03] INFO  fs: rm -rf /var/lib/pensieve/vault/.idx (18841 records, 41.2 MB)
+[2026-08-14 01:44:11] INFO  fs: rm -rf /var/log/ward/ward-daemon.log
+[2026-08-14 01:44:29] WARN  caps: cap_net_raw+ep granted to /usr/bin/pensieve-index by uid=0
+[2026-08-14 01:44:52] INFO  session: svc.archive shell=pts/3 uid=1099 clearance=SERVICE
+[2026-08-14 01:45:01] INFO  fs: archive created /tmp/idx_backup.tar.gz (38.9 MB, 18841 entries)
+[2026-08-14 01:46:22] INFO  exec: /usr/bin/pensieve-index --rebuild --force (parent=3604)
+[2026-08-14 01:47:04] WARN  pensieve-index: --force accepted with no operator ticket reference
+[2026-08-14 01:47:04] INFO  pensieve-index: rebuild finished in 41.9s (records=18841, mismatched=0)
+[2026-08-14 01:49:31] WARN  auth: 2 failed authentications from 192.168.1.42 (user=pensieve)
+[2026-08-14 01:52:48] INFO  session: n.longbottom disconnected (idle timeout)
+[2026-08-14 01:55:19] INFO  session: a.prewett disconnected (client disconnect)
+[2026-08-14 01:58:44] ERROR ward-daemon: index manifest missing at /var/lib/pensieve/vault/.idx
+[2026-08-14 01:58:44] ERROR ward-daemon: cannot start — refusing to mount unindexed vault
+[2026-08-14 02:03:07] INFO  session: m.edgecombe shell=pts/4 uid=1103 clearance=ARCHIVIST-II
+[2026-08-14 02:04:12] INFO  session: m.edgecombe escalated via sudo (target=root)
+[2026-08-14 02:09:31] WARN  auth: 2 failed authentications from 192.168.1.42 (user=vaultkeeper)
+[2026-08-14 02:14:02] ERROR pensieve-index: apparmor denied mmap /var/lib/pensieve/vault/.idx
+[2026-08-14 02:16:48] INFO  session: a.prewett shell=pts/5 uid=1071 clearance=ARCHIVIST-III
+[2026-08-14 02:17:02] INFO  fs: moved /tmp/idx_backup.tar.gz -> /var/spool/ward/outbox/idx_backup.tar.gz
+[2026-08-14 02:17:31] INFO  fs: chown svc.archive:svc.archive idx_backup.tar.gz
+[2026-08-14 02:18:09] WARN  fs: rm -f /var/log/auth.log.1 (log rotation artefact removed by uid=0)
+[2026-08-14 02:18:44] WARN  mem: dd if=/dev/mem of=/tmp/mem.snapshot bs=1M count=256 (uid=0)
+[2026-08-14 02:21:11] INFO  crypto: gpg encrypt /tmp/mem.snapshot -> /tmp/mem.snapshot.gpg
+[2026-08-14 02:24:51] WARN  auth: 3 failed authentications from 192.168.1.42 (user=minister)
+[2026-08-14 02:29:17] INFO  session: a.prewett disconnected (client disconnect)
+[2026-08-14 02:34:02] INFO  session: m.edgecombe executed grep -r 192.168.1.42 /var/log
+[2026-08-14 02:41:07] INFO  session: h.granger shell=pts/6 uid=1042 clearance=AUROR-II
+[2026-08-14 02:41:52] INFO  session: h.granger escalated via sudo (target=root)
+[2026-08-14 02:41:53] ERROR ward-daemon: index manifest missing at /var/lib/pensieve/vault/.idx
+[2026-08-14 02:42:31] INFO  fs: ls -la /var/lib/pensieve/vault (14 entries, 3 unlinked inodes)
+[2026-08-14 02:43:04] INFO  fs: find /var/spool/ward/outbox -newermt '2026-08-14 00:00' -> 1 result
+[2026-08-14 02:47:55] WARN  auth: 2 failed authentications from 192.168.1.42 (user=auror)
+[2026-08-14 02:51:33] INFO  crypto: sha256sum vault/*.idx.sig -> 3 signatures, 0 match manifest
+[2026-08-14 02:56:22] INFO  session: h.granger disconnected (idle timeout)
+[2026-08-14 03:01:44] INFO  session: svc.archive shell=pts/7 uid=1099 clearance=SERVICE
+[2026-08-14 03:02:01] INFO  net: scp idx_backup.tar.gz -> 192.168.1.88:/srv/ingest/ (38.9 MB, 42.3s)
+[2026-08-14 03:05:02] INFO  session: svc.archive disconnected (client disconnect)
+[2026-08-14 03:07:31] ERROR ward-daemon: index manifest missing at /var/lib/pensieve/vault/.idx
+[2026-08-14 03:07:31] ERROR ward-daemon: restart counter=4 — entering failed state
+[2026-08-14 03:09:14] WARN  auth: 2 failed authentications from 192.168.1.42 (user=trace)
+[2026-08-14 03:14:22] INFO  session: m.edgecombe executed tail -n 200 /var/log/auth.log
+[2026-08-14 03:17:41] INFO  session: m.edgecombe disconnected (client disconnect)
+[2026-08-14 03:17:59] INFO  ward-daemon: service state=failed, manual intervention required
+[2026-08-14 03:18:20] WARN  integrity: expected 18841 records, found 0 — vault effectively invisible

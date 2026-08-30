@@ -1,0 +1,69 @@
+{
+  "acquisition": {
+    "case": "TRACE-001",
+    "examiner": "Auror H. Granger",
+    "examiner_id": "AUR-1042",
+    "toolchain": "mo-forensic-02 / trace-acquire 2.4.1",
+    "acquired_at": "2026-08-14T03:22:11Z",
+    "timezone": "Europe/London",
+    "clock_skew_seconds": -2.4,
+    "write_blocker": "Tableau T35u",
+    "chain_of_custody": [
+      { "at": "2026-08-14T03:22:11Z", "actor": "AUR-1042", "action": "seized", "location": "Level 2 / WS-114" },
+      { "at": "2026-08-14T03:41:02Z", "actor": "AUR-1042", "action": "imaged", "location": "Forensic Lab 3" },
+      { "at": "2026-08-14T04:05:38Z", "actor": "ARCH-1103", "action": "transferred", "location": "Evidence Vault B" }
+    ]
+  },
+  "host": {
+    "hostname": "mo-auror-01",
+    "asset_tag": "MOM-WS-0114",
+    "os": "EnchantedLinux 9.4 (kernel 6.8.4-moward)",
+    "architecture": "x86_64",
+    "uptime_at_acquisition": "0d 06:14:02",
+    "last_boot": "2026-08-13T21:08:01Z",
+    "physical_location": "Ministry of Magic, Level 2, Auror Office",
+    "network": {
+      "primary_interface": "eth0",
+      "ipv4": "10.20.4.114",
+      "subnet": "10.20.4.0/24",
+      "gateway": "10.20.4.1",
+      "resolver": "10.20.0.2",
+      "floo_enabled": true,
+      "external_egress": false
+    }
+  },
+  "vault": {
+    "mount": "/var/lib/pensieve/vault",
+    "filesystem": "ext4",
+    "expected_records": 18841,
+    "recovered_records": 0,
+    "shards": 14,
+    "shards_readable": 13,
+    "index_manifest": {
+      "path": "/var/lib/pensieve/vault/.idx",
+      "state": "MISSING",
+      "last_modified": "2026-08-14T01:44:03Z",
+      "size_bytes": 43189024,
+      "signature_verified": false
+    },
+    "seal": {
+      "policy": "floo-network-v4.2",
+      "state": "BROKEN",
+      "broken_at": "2026-08-14T01:43:47Z"
+    }
+  },
+  "indicators": {
+    "suspected_source_ip": "192.168.1.42",
+    "exfiltration_target": "192.168.1.88",
+    "external_domains": ["ingest.dropshire.net", "metrics.dropshire.net", "keys.dropshire.net"],
+    "accounts": ["a.prewett", "svc.archive"],
+    "legacy_accounts_probed": ["oracle", "archive", "pensieve", "vaultkeeper", "minister", "auror", "trace"]
+  },
+  "integrity": {
+    "manifest_entries": 15,
+    "verified": 13,
+    "altered": 0,
+    "unresolved": 2,
+    "notes": "Two manifest entries reference files deleted during the incident window. Recovery attempts on shard-07 returned I/O errors."
+  }
+}
