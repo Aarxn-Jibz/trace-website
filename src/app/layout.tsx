@@ -1,88 +1,22 @@
-import type { Metadata, Viewport } from "next";
-import {
-  Archivo,
-  Cinzel_Decorative,
-  IM_Fell_English,
-  Inter,
-  JetBrains_Mono,
-} from "next/font/google";
+import type { Metadata } from "next";
+import "@fontsource/cinzel-decorative/700.css";
+import "@fontsource/cormorant-garamond/500.css";
+import "@fontsource/cormorant-garamond/600.css";
+import "@fontsource/dm-mono/400.css";
+import "@fontsource/manrope/400.css";
+import "@fontsource/manrope/500.css";
+import "@fontsource/manrope/600.css";
 import "./globals.css";
-import { TooltipProvider } from "@/components/ui/tooltip";
-
-/**
- * Typographic hierarchy — four distinct roles, deliberately different.
- *
- *   display  Cinzel Decorative  wizarding gothic — TRACE wordmark only
- *   serif    IM Fell English    old-world serif — case titles, dossier heads
- *   heading  Archivo            modern grotesque — UI headings
- *   sans     Inter              body copy
- *   mono     JetBrains Mono     evidence, IDs, forensic data
- */
-const display = Cinzel_Decorative({
-  subsets: ["latin"],
-  weight: ["700", "900"],
-  variable: "--font-display",
-  display: "swap",
-});
-
-const serif = IM_Fell_English({
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-  variable: "--font-serif",
-  display: "swap",
-});
-
-const heading = Archivo({
-  subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
-  variable: "--font-heading",
-  display: "swap",
-});
-
-const sans = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-sans",
-  display: "swap",
-});
-
-const mono = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  variable: "--font-mono",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
-  title: "TRACE — Track · Retrieve · Analyze · Correlate · Examine",
-  description:
-    "A cybercrime investigation challenge run by the Ministry of Magic. Inspect authentic digital evidence, correlate artefacts across sources, and reconstruct what happened.",
-  applicationName: "TRACE",
-  keywords: ["TRACE", "cybercrime", "digital forensics", "CTF", "investigation"],
-  openGraph: {
-    title: "TRACE — Every artifact leaves a trace.",
-    description:
-      "Ministry of Magic · Department of Magical Law Enforcement · Cybercrime Investigation Exercise",
-    type: "website",
-  },
+  title: "TRACE — Cybercrime Investigation Challenge",
+  description: "Track. Retrieve. Analyze. Correlate. Examine.",
 };
 
-export const viewport: Viewport = {
-  themeColor: "#0B0A09",
-  colorScheme: "dark",
-};
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className="dark">
-      <body
-        className={`${display.variable} ${serif.variable} ${heading.variable} ${sans.variable} ${mono.variable} min-h-screen bg-ink-900`}
-      >
-        <TooltipProvider delayDuration={250} skipDelayDuration={400}>
-          {children}
-        </TooltipProvider>
-      </body>
+    <html lang="en">
+      <body>{children}</body>
     </html>
   );
 }
