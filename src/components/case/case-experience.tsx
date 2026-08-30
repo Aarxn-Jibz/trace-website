@@ -15,6 +15,12 @@ export function CaseExperience({ traceCase }: { traceCase: TraceCase }) {
   const locked = traceCase.status === "locked";
 
   function view(file: EvidenceFile) { setSelected(file); setWorkstationOpen(true); }
+  function download(file: EvidenceFile) {
+    const blob = new Blob([file.content], { type: "application/octet-stream" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url; anchor.download = file.name; anchor.click(); URL.revokeObjectURL(url);
+  }
 
   return (
     <main className="case-page">
@@ -38,7 +44,7 @@ export function CaseExperience({ traceCase }: { traceCase: TraceCase }) {
                 <div><h2>{file.name}</h2><p>{file.size} · {file.type === "unsupported" ? "External tool" : file.type}</p></div>
                 <div className="evidence-actions">
                   <Button variant="quiet" onClick={() => view(file)}><Eye /> VIEW</Button>
-                  <button aria-label={`Download ${file.name}`}><Download /></button>
+                  <button aria-label={`Download ${file.name}`} onClick={() => download(file)}><Download /></button>
                 </div>
               </article>
             ))}

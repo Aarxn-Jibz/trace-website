@@ -24,11 +24,13 @@ export interface ButtonProps
 }
 
 export function Button({ className, variant, asChild, children, ...props }: ButtonProps) {
-  const Comp = asChild ? Slot : "button";
+  if (asChild) {
+    return <Slot className={cn(buttonVariants({ variant }), className)} {...props}>{children}</Slot>;
+  }
   return (
-    <Comp className={cn(buttonVariants({ variant }), className)} {...props}>
+    <button className={cn(buttonVariants({ variant }), className)} {...props}>
       <span className="absolute inset-y-0 left-0 w-0 bg-white/10 transition-[width] duration-500 group-hover:w-full" />
       <span className="relative">{children}</span>
-    </Comp>
+    </button>
   );
 }

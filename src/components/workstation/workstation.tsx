@@ -30,6 +30,13 @@ function TextViewer({ text, query, current }: { text: string; query: string; cur
   })}</div>;
 }
 
+function downloadMock(file: EvidenceFile) {
+  const blob = new Blob([file.content], { type: "application/octet-stream" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url; anchor.download = file.name; anchor.click(); URL.revokeObjectURL(url);
+}
+
 function FileViewer({ file, query, current }: { file: EvidenceFile; query: string; current: number }) {
   if (file.type === "text") return <TextViewer text={file.content} query={query} current={current} />;
   if (file.type === "markdown") return <article className="markdown-viewer"><ReactMarkdown remarkPlugins={[remarkGfm]}>{file.content}</ReactMarkdown></article>;
@@ -38,21 +45,26 @@ function FileViewer({ file, query, current }: { file: EvidenceFile; query: strin
     return <div className="csv-wrap"><table><thead><tr>{rows[0].map((cell) => <th key={cell}>{cell}</th>)}</tr></thead><tbody>{rows.slice(1).map((row, i) => <tr key={i}>{row.map((cell, j) => <td key={j}>{cell}</td>)}</tr>)}</tbody></table></div>;
   }
   if (file.type === "json") return <pre className="json-viewer">{JSON.stringify(JSON.parse(file.content), null, 2)}</pre>;
-  return <div className="unsupported"><div className="unsupported-ring" /><p>The Pensieve cannot interpret this memory.</p><h2>Open this capture in {file.tool}.</h2><button><Download /> DOWNLOAD {file.name}</button></div>;
+  return <div className="unsupported"><div className="unsupported-ring" /><p>The Pensieve cannot interpret this memory.</p><h2>Open this capture in {file.tool}.</h2><button onClick={() => downloadMock(file)}><Download /> DOWNLOAD {file.name}</button></div>;
 }
 
 export function Workstation({ files, initialFile, onClose }: { files: EvidenceFile[]; initialFile: EvidenceFile; onClose: () => void }) {
-  const [file, setFile] = React.useState(initialFile);
+  const [file, setFile] = React.useState<EvidenceFile | null>(initialFile);
   const [query, setQuery] = React.useState("");
   const [searchOpen, setSearchOpen] = React.useState(false);
   const [current, setCurrent] = React.useState(0);
   const [closing, setClosing] = React.useState(false);
   const [fileFlash, setFileFlash] = React.useState<"green" | "red" | null>("green");
   const reduce = useReducedMotion();
-  const searchable = file.type === "text";
-  const count = searchable ? splitMatches(file.content, query).count : 0;
+  const searchable = file?.type === "text";
+  const count = searchable && file ? splitMatches(file.content, query).count : 0;
 
   React.useEffect(() => { if (fileFlash) { const timer = setTimeout(() => setFileFlash(null), 480); return () => clearTimeout(timer); } }, [fileFlash]);
+  React.useEffect(() => {
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = previous; };
+  }, []);
   React.useEffect(() => {
     const handler = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "f" && searchable) { event.preventDefault(); setSearchOpen(true); }
@@ -69,8 +81,8 @@ export function Workstation({ files, initialFile, onClose }: { files: EvidenceFi
   }, [current, count, reduce]);
 
   function navigate(direction: number) { if (count) setCurrent((value) => (value + direction + count) % count); }
-  function choose(next: EvidenceFile) { setFileFlash(file ? "green" : null); setFile(next); setQuery(""); setCurrent(0); setSearchOpen(false); }
-  function closeFile() { setFileFlash("red"); setTimeout(() => { setFile(files[0]); setQuery(""); }, 180); }
+  function choose(next: EvidenceFile) { setFileFlash("green"); setFile(next); setQuery(""); setCurrent(0); setSearchOpen(false); }
+  function closeFile() { setFileFlash("red"); setTimeout(() => { setFile(null); setQuery(""); setSearchOpen(false); }, 180); }
   function closeWorkstation() { setClosing(true); setTimeout(onClose, reduce ? 100 : 760); }
 
   return (
@@ -83,11 +95,11 @@ export function Workstation({ files, initialFile, onClose }: { files: EvidenceFi
       >
         <div className="parchment-edge parchment-top" /><div className="parchment-edge parchment-bottom" />
         <div className="workstation">
-          <header className="workstation-top"><div><span>TRACE</span> FORENSICS</div><span className="current-file">{file.name}</span><button onClick={closeWorkstation} aria-label="Close workstation"><X /></button></header>
-          <aside className="file-sidebar"><p>EVIDENCE</p>{files.map((item) => <button className={item.id === file.id ? "active" : ""} onClick={() => choose(item)} key={item.id}><FileText /><span>{item.name}</span><small>{item.size}</small></button>)}</aside>
+          <header className="workstation-top"><div><span>TRACE</span> FORENSICS</div><span className="current-file">{file?.name ?? "NO FILE OPEN"}</span><button onClick={closeWorkstation} aria-label="Close workstation"><X /></button></header>
+          <aside className="file-sidebar"><p>EVIDENCE</p>{files.map((item) => <button className={item.id === file?.id ? "active" : ""} onClick={() => choose(item)} key={item.id}><FileText /><span>{item.name}</span><small>{item.size}</small></button>)}</aside>
           <section className="viewer-panel">
-            <div className="viewer-toolbar"><span>{file.type.toUpperCase()}</span><div>{searchable && <button onClick={() => setSearchOpen(true)}><Search /> FIND <kbd>⌘F</kbd></button>}<button onClick={closeFile} className="close-file">CLOSE FILE</button></div></div>
-            <AnimatePresence mode="wait"><motion.div key={file.id} className="viewer-content" initial={{ opacity: 0, clipPath: "inset(0 100% 0 0)" }} animate={{ opacity: 1, clipPath: "inset(0 0 0 0)" }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}><FileViewer file={file} query={query} current={current} /></motion.div></AnimatePresence>
+            <div className="viewer-toolbar"><span>{file?.type.toUpperCase() ?? "VIEWER"}</span><div>{searchable && <button onClick={() => setSearchOpen(true)}><Search /> FIND <kbd>⌘F</kbd></button>}{file && <button onClick={closeFile} className="close-file">CLOSE FILE</button>}</div></div>
+            <AnimatePresence mode="wait">{file ? <motion.div key={file.id} className="viewer-content" initial={{ opacity: 0, clipPath: "inset(0 100% 0 0)" }} animate={{ opacity: 1, clipPath: "inset(0 0 0 0)" }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}><FileViewer file={file} query={query} current={current} /></motion.div> : <motion.div key="empty" className="viewer-empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }}><FileText/><p>Select evidence to inspect</p></motion.div>}</AnimatePresence>
             <AnimatePresence>{searchOpen && searchable && <motion.div className="search-box" initial={{ x: 24, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 10, opacity: 0 }}><Search /><input autoFocus value={query} onChange={(event) => { setQuery(event.target.value); setCurrent(0); }} placeholder="Find in evidence" aria-label="Find in evidence"/><span>{query ? `${count ? current + 1 : 0} / ${count}` : "0 / 0"}</span><button onClick={() => navigate(-1)} aria-label="Previous result"><ChevronUp /></button><button onClick={() => navigate(1)} aria-label="Next result"><ChevronDown /></button><button onClick={() => setSearchOpen(false)} aria-label="Close search"><X /></button>{query && <i className={count ? "search-magic" : "search-miss"} key={`${query}-${current}`} />}</motion.div>}</AnimatePresence>
             {fileFlash && <motion.div className={`file-magic ${fileFlash}`} initial={{ scaleX: 0, opacity: 1 }} animate={{ scaleX: 1, opacity: 0 }} transition={{ duration: 0.45 }} />}
           </section>

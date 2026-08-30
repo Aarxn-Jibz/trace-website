@@ -14,22 +14,24 @@ const STEPS = [
   { letter: "E", word: "EXAMINE", copy: "Test the reconstruction against every artifact." },
 ];
 
+function ScrollTraceLetter({ letter, index, progress }: { letter: string; index: number; progress: ReturnType<typeof useScroll>["scrollYProgress"] }) {
+  const opacity = useTransform(progress, [index * 0.16, index * 0.16 + 0.12], [0.08, 1]);
+  return <motion.span style={{ opacity }}>{letter}</motion.span>;
+}
+
 function TraceWord({ progress }: { progress?: ReturnType<typeof useScroll>["scrollYProgress"] }) {
   return (
     <div className="trace-word" aria-hidden="true">
-      {"TRACE".split("").map((letter, index) => (
-        <motion.span
-          key={letter}
-          initial={{ opacity: 0.03 }}
-          animate={progress ? undefined : { opacity: [0.03, 0.12, 1], textShadow: ["0 0 0 transparent", "0 0 28px rgba(222,190,111,.35)", "0 0 0 transparent"] }}
-          transition={{ duration: 1.2, delay: 0.45 + index * 0.13, times: [0, 0.55, 1] }}
-          style={progress ? { opacity: useTransform(progress, [index * 0.16, index * 0.16 + 0.12], [0.08, 1]) } : undefined}
-        >
-          {letter}
-        </motion.span>
-      ))}
+      {"TRACE".split("").map((letter, index) => progress ? <ScrollTraceLetter key={letter} letter={letter} index={index} progress={progress} /> : <span className="hero-letter" key={letter}>{letter}</span>)}
     </div>
   );
+}
+
+function DecodeStep({ step, index, progress, reduce }: { step: (typeof STEPS)[number]; index: number; progress: ReturnType<typeof useScroll>["scrollYProgress"]; reduce: boolean | null }) {
+  const center = index / 4;
+  const opacity = useTransform(progress, [Math.max(0, center - 0.14), center, Math.min(1, center + 0.14)], [0, 1, 0]);
+  const travel = useTransform(progress, [Math.max(0, center - 0.14), center, Math.min(1, center + 0.14)], [index % 2 ? -80 : 80, 0, index % 2 ? 50 : -50]);
+  return <motion.article className={`decode-copy decode-copy-${index + 1}`} style={reduce ? undefined : { opacity, x: travel }}><span className="decode-letter">{step.letter}</span><div><h2>{step.word}</h2><p>{step.copy}</p></div></motion.article>;
 }
 
 function DecodeScene() {
@@ -45,24 +47,7 @@ function DecodeScene() {
         <motion.div className="decode-word" style={reduce ? undefined : { x, scale }}>
           <TraceWord progress={scrollYProgress} />
         </motion.div>
-        {STEPS.map((step, index) => {
-          const center = index / 4;
-          const opacity = useTransform(scrollYProgress, [Math.max(0, center - 0.14), center, Math.min(1, center + 0.14)], [0, 1, 0]);
-          const travel = useTransform(scrollYProgress, [Math.max(0, center - 0.14), center, Math.min(1, center + 0.14)], [index % 2 ? -80 : 80, 0, index % 2 ? 50 : -50]);
-          return (
-            <motion.article
-              key={step.letter}
-              className={`decode-copy decode-copy-${index + 1}`}
-              style={reduce ? { opacity: center === 0 ? 1 : undefined } : { opacity, x: travel }}
-            >
-              <span className="decode-letter">{step.letter}</span>
-              <div>
-                <h2>{step.word}</h2>
-                <p>{step.copy}</p>
-              </div>
-            </motion.article>
-          );
-        })}
+        {STEPS.map((step, index) => <DecodeStep key={step.letter} step={step} index={index} progress={scrollYProgress} reduce={reduce} />)}
         <motion.div className="trace-beam" style={{ scaleX: scrollYProgress }} />
       </div>
     </section>
