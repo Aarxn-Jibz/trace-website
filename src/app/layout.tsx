@@ -1,12 +1,35 @@
 import type { Metadata, Viewport } from "next";
-import { Anton, Archivo, Inter, JetBrains_Mono } from "next/font/google";
+import {
+  Archivo,
+  Cinzel_Decorative,
+  IM_Fell_English,
+  Inter,
+  JetBrains_Mono,
+} from "next/font/google";
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-const display = Anton({
+/**
+ * Typographic hierarchy — four distinct roles, deliberately different.
+ *
+ *   display  Cinzel Decorative  wizarding gothic — TRACE wordmark only
+ *   serif    IM Fell English    old-world serif — case titles, dossier heads
+ *   heading  Archivo            modern grotesque — UI headings
+ *   sans     Inter              body copy
+ *   mono     JetBrains Mono     evidence, IDs, forensic data
+ */
+const display = Cinzel_Decorative({
+  subsets: ["latin"],
+  weight: ["700", "900"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+const serif = IM_Fell_English({
   subsets: ["latin"],
   weight: "400",
-  variable: "--font-display",
+  style: ["normal", "italic"],
+  variable: "--font-serif",
   display: "swap",
 });
 
@@ -39,13 +62,14 @@ export const metadata: Metadata = {
   keywords: ["TRACE", "cybercrime", "digital forensics", "CTF", "investigation"],
   openGraph: {
     title: "TRACE — Every artifact leaves a trace.",
-    description: "Ministry of Magic · Department of Magical Law Enforcement · Cybercrime Investigation Exercise",
+    description:
+      "Ministry of Magic · Department of Magical Law Enforcement · Cybercrime Investigation Exercise",
     type: "website",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#08090A",
+  themeColor: "#0B0A09",
   colorScheme: "dark",
 };
 
@@ -53,7 +77,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className="dark">
       <body
-        className={`${display.variable} ${heading.variable} ${sans.variable} ${mono.variable} min-h-screen bg-ink-900`}
+        className={`${display.variable} ${serif.variable} ${heading.variable} ${sans.variable} ${mono.variable} min-h-screen bg-ink-900`}
       >
         <TooltipProvider delayDuration={250} skipDelayDuration={400}>
           {children}
