@@ -9,6 +9,7 @@
         "@fontsource/cormorant-garamond": "^5.2.5",
         "@fontsource/dm-mono": "^5.2.5",
         "@fontsource/manrope": "^5.2.5",
+        "@fontsource/new-rocker": "^5.3.0",
         "@radix-ui/react-dialog": "^1.1.15",
         "@radix-ui/react-slot": "^1.2.3",
         "class-variance-authority": "^0.7.1",
@@ -69,6 +70,8 @@
     "@fontsource/dm-mono": ["@fontsource/dm-mono@5.3.0", "", {}, "sha512-OINjI8C1S/wpchhQxl7njZdMn4+hnDCpQ4YtvvOpKNARo+0J8O1x1IcrChxNjHOhfVv1by8C/FQoy3hXK+C1Ug=="],
 
     "@fontsource/manrope": ["@fontsource/manrope@5.3.0", "", {}, "sha512-obJ1Dv3+uCA6HlHgW8u4BGYxJR9In2HW7gjJhlflEvkrj1X1iSEwu0fToL+JYGC/FEKFfIz1sBuPduvcL2gIAA=="],
+
+    "@fontsource/new-rocker": ["@fontsource/new-rocker@5.3.0", "", {}, "sha512-m2Tx0gXPSyN41vNd4l9LbPwxxDwzi+HKYzSJO3ExRFhJIPvPAJ/y7CUgFs6OIv8QvmHoa3o9u4mbKU2+iWIsDQ=="],
 
     "@humanfs/core": ["@humanfs/core@0.19.2", "", { "dependencies": { "@humanfs/types": "^0.15.0" } }, "sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA=="],
 

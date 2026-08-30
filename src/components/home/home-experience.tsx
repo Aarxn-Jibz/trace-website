@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import * as React from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { ArrowDown, ArrowUpRight, LockKeyhole } from "lucide-react";
 import { CASES } from "@/data/trace";
 
@@ -18,9 +18,9 @@ type Progress = ReturnType<typeof useScroll>["scrollYProgress"];
 
 function JourneyLetter({ letter, index, progress, reduce }: { letter: string; index: number; progress: Progress; reduce: boolean | null }) {
   const stage = 0.2 + index * 0.145;
-  const opacity = useTransform(progress, [0, 0.1, Math.max(0.11, stage - 0.07), stage, Math.min(0.94, stage + 0.08), 1], [1, 1, 0.12, 1, 0.15, 0.82]);
-  const brightness = useTransform(progress, [Math.max(0, stage - 0.06), stage, Math.min(1, stage + 0.07)], [0.55, 1.45, 0.55]);
-  const filter = useTransform(brightness, (value) => `brightness(${value})`);
+  const opacity = useTransform(progress, [0, 0.08, Math.max(0.1, stage - 0.07), stage, 1], [0.78, 0.46, 0.2, 1, 1]);
+  const brightness = useTransform(progress, [0, Math.max(0, stage - 0.06), stage, 1], [0.72, 0.42, 1.32, 1]);
+  const filter = useTransform(brightness, (value) => `brightness(${value}) contrast(1.08)`);
   return <motion.span className={`journey-letter journey-letter-${index + 1}`} style={reduce ? undefined : { opacity, filter }}>{letter}</motion.span>;
 }
 
@@ -39,19 +39,71 @@ function JourneyStep({ step, index, progress, reduce }: { step: (typeof STEPS)[n
 function TraceJourney() {
   const ref = React.useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
+  const [lightning, setLightning] = React.useState<"quiet" | "distant" | "strong" | "after">("quiet");
+  const [strike, setStrike] = React.useState(0);
+  const [activeStage, setActiveStage] = React.useState(-1);
+  const stageRef = React.useRef(-1);
+  const flashTimers = React.useRef<number[]>([]);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
   const wordScale = useTransform(scrollYProgress, [0, 0.11, 0.45, 0.88, 1], [1, 1, 0.77, 1.05, 0.66]);
   const wordX = useTransform(scrollYProgress, [0, 0.22, 0.5, 0.82, 1], ["0vw", "7vw", "-8vw", "5vw", "0vw"]);
   const wordY = useTransform(scrollYProgress, [0, 0.1, 0.5, 0.9, 1], ["0vh", "-4vh", "4vh", "-3vh", "0vh"]);
   const introOpacity = useTransform(scrollYProgress, [0, 0.07, 0.12], [1, 1, 0]);
-  const fogShift = useTransform(scrollYProgress, [0, 1], ["-5%", "9%"]);
-  const fogReverse = useTransform(fogShift, (value) => `calc(${value} * -1)`);
+  const cloudShift = useTransform(scrollYProgress, [0, 1], ["-7%", "8%"]);
+  const cloudReverse = useTransform(cloudShift, (value) => `calc(${value} * -0.72)`);
+
+  const fireLightning = React.useCallback((kind: "distant" | "strong") => {
+    if (reduce) return;
+    flashTimers.current.forEach(window.clearTimeout);
+    flashTimers.current = [];
+    setStrike((value) => value + 1);
+    setLightning(kind);
+    flashTimers.current.push(window.setTimeout(() => setLightning("quiet"), kind === "strong" ? 115 : 90));
+    if (kind === "strong") {
+      flashTimers.current.push(window.setTimeout(() => setLightning("after"), 285));
+      flashTimers.current.push(window.setTimeout(() => setLightning("quiet"), 390));
+    }
+  }, [reduce]);
+
+  React.useEffect(() => {
+    if (reduce) return;
+    let stopped = false;
+    let timer = 0;
+    const schedule = () => {
+      timer = window.setTimeout(() => {
+        if (stopped) return;
+        fireLightning(Math.random() > 0.62 ? "strong" : "distant");
+        schedule();
+      }, 3800 + Math.random() * 5200);
+    };
+    const opening = window.setTimeout(() => fireLightning("strong"), 720);
+    schedule();
+    return () => {
+      stopped = true;
+      window.clearTimeout(timer);
+      window.clearTimeout(opening);
+      flashTimers.current.forEach(window.clearTimeout);
+    };
+  }, [fireLightning, reduce]);
+
+  useMotionValueEvent(scrollYProgress, "change", (value) => {
+    const nextStage = STEPS.reduce((found, _, index) => value >= 0.16 + index * 0.145 ? index : found, -1);
+    if (nextStage === stageRef.current) return;
+    stageRef.current = nextStage;
+    setActiveStage(nextStage);
+    if (nextStage >= 0) fireLightning(nextStage === 3 || nextStage === 4 ? "strong" : "distant");
+  });
 
   return (
     <section ref={ref} id="trace-journey" className="trace-journey" aria-label="TRACE — Track, Retrieve, Analyze, Correlate, Examine">
-      <div className="journey-sticky">
-        <motion.div className="journey-fog journey-fog-a" style={reduce ? undefined : { x: fogShift }} />
-        <motion.div className="journey-fog journey-fog-b" style={reduce ? undefined : { x: fogReverse }} />
+      <div className={`journey-sticky lightning-${lightning} storm-stage-${activeStage + 1}`}>
+        <div className="storm-depth" />
+        <motion.div className="storm-cloud storm-cloud-far" style={reduce ? undefined : { x: cloudReverse }} />
+        <motion.div className="storm-cloud storm-cloud-mid" style={reduce ? undefined : { x: cloudShift }} />
+        <motion.div className="storm-cloud storm-cloud-near" style={reduce ? undefined : { x: cloudReverse }} />
+        <div className="storm-illumination" />
+        {lightning === "strong" && <svg key={strike} className="storm-bolt" viewBox="0 0 1000 700" aria-hidden="true"><path d="M744 -30 690 112l-40 28 22 51-73 67 17 46-109 102"/><path d="m651 139-71 5-43 53"/><path d="m614 303-69 19-31 59"/></svg>}
+        <div className="storm-vignette" />
         <motion.div className="journey-word" style={reduce ? undefined : { scale: wordScale, x: wordX, y: wordY }}>
           {"TRACE".split("").map((letter, index) => <JourneyLetter key={letter} letter={letter} index={index} progress={scrollYProgress} reduce={reduce} />)}
           <span className="journey-engraving" />
