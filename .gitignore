@@ -35,3 +35,6 @@ yarn-error.log*
 # workbuddy
 workbuddy-ai/
 .workbuddy-ai/
+
+# visual QA artefacts (regenerated via scripts/shots.mjs)
+/.shots/
