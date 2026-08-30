@@ -1,8 +1,6 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-let sealCounter = 0;
-
 /**
  * Ministry of Magic departmental seal.
  *
@@ -23,7 +21,11 @@ export function MinistrySeal({
   bottom?: string;
   showRings?: boolean;
 }) {
-  const uid = React.useMemo(() => `seal-${++sealCounter}`, []);
+  // React.useId is stable across server / client renders; using a module
+  // counter would diverge under React 19 Strict Mode and trigger a
+  // hydration warning on every page that mounts a seal.
+  const reactId = React.useId();
+  const uid = reactId.replace(/:/g, "");
 
   const stroke =
     variant === "wax" ? "rgba(233,227,213,0.72)" : variant === "ghost" ? "rgba(233,227,213,0.22)" : "rgba(183,151,73,0.62)";

@@ -3,6 +3,7 @@
 import * as React from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Binary, Network, Search, Table2, FileType, Hash } from "lucide-react";
+import { SectionHead } from "@/components/ui/section-head";
 
 const STEPS = [
   {
@@ -40,34 +41,29 @@ export function Protocol() {
   const reduce = useReducedMotion();
 
   return (
-    <section id="protocol" className="relative scroll-mt-11 py-20 sm:py-28">
+    <section id="protocol" className="relative scroll-mt-11 py-16 sm:py-20">
       <div className="mx-auto w-full max-w-[1600px] px-5 sm:px-8">
-        <motion.div
-          initial={reduce ? false : { opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-wrap items-end justify-between gap-6"
-        >
-          <div>
-            <p className="label-mono mb-4 flex items-center gap-2">
-              <span className="h-px w-8 bg-brass/70" />
-              Section 03
-            </p>
-            <h2 className="font-display text-[clamp(2.75rem,7vw,5.5rem)] leading-[0.86] tracking-[0.01em] text-parchment-100">
-              THE
-              <br />
-              PROTOCOL
-            </h2>
-          </div>
-          <p className="max-w-md text-[14px] leading-relaxed text-parchment-400">
-            There are no riddles here and no clues hidden in prose. Every answer is
-            recoverable from the evidence itself, using the tools an investigator
-            would actually reach for.
-          </p>
-        </motion.div>
+        <SectionHead
+          number="03"
+          kicker="Section 03 · How it works"
+          title="The protocol"
+          counter="03 / 03"
+          note="Method"
+        />
 
-        <div className="mt-14 grid gap-px border border-parchment-500/12 bg-parchment-500/12 md:grid-cols-2 xl:grid-cols-4">
+        <motion.p
+          initial={reduce ? false : { opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          className="mt-10 max-w-2xl text-[15.5px] leading-relaxed text-parchment-400"
+        >
+          There are no riddles here and no clues hidden in prose. Every answer is
+          recoverable from the evidence itself, using the tools an investigator
+          would actually reach for.
+        </motion.p>
+
+        <div className="mt-12 grid gap-px border border-parchment-500/12 bg-parchment-500/12 md:grid-cols-2 xl:grid-cols-4">
           {STEPS.map((s, i) => (
             <motion.div
               key={s.n}
@@ -77,10 +73,15 @@ export function Protocol() {
               transition={{ duration: 0.6, delay: i * 0.08 }}
               className="group relative bg-ink-900 p-7 transition-colors duration-500 hover:bg-ink-850"
             >
-              <span className="font-display text-[46px] leading-none text-parchment-700 transition-colors duration-500 group-hover:text-brass/70">
-                {s.n}
-              </span>
-              <h3 className="mt-5 font-heading text-[15px] font-bold uppercase tracking-widest2 text-parchment-100">
+              <div className="flex items-start justify-between">
+                <span className="font-display text-[60px] leading-[0.85] text-parchment-700 transition-colors duration-500 group-hover:text-brass/80">
+                  {s.n}
+                </span>
+                <span className="font-mono text-[8px] uppercase tracking-widest2 text-parchment-700 transition-colors duration-500 group-hover:text-brass-light">
+                  Step {s.n}
+                </span>
+              </div>
+              <h3 className="mt-6 font-heading text-[16px] font-bold uppercase tracking-widest2 text-parchment-100">
                 {s.title}
               </h3>
               <p className="mt-3 text-[13.5px] leading-relaxed text-parchment-500">{s.body}</p>

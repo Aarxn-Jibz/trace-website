@@ -4,50 +4,63 @@ import * as React from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { listCases } from "@/data";
 import { CaseCard } from "@/components/case/case-card";
+import { SectionHead } from "@/components/ui/section-head";
 
 export function CaseIndex() {
   const reduce = useReducedMotion();
   const cases = listCases();
 
   return (
-    <section id="dossiers" className="relative scroll-mt-11 border-b border-parchment-500/12 py-20 sm:py-28">
-      <div className="pointer-events-none absolute inset-0 grid-backdrop opacity-40" />
+    <section
+      id="dossiers"
+      className="relative scroll-mt-11 border-b border-parchment-500/12 py-16 sm:py-20"
+    >
+      <div className="pointer-events-none absolute inset-0 grid-backdrop opacity-30" />
 
       <div className="relative mx-auto w-full max-w-[1600px] px-5 sm:px-8">
-        {/* section head */}
-        <motion.div
-          initial={reduce ? false : { opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-wrap items-end justify-between gap-6"
-        >
-          <div>
-            <p className="label-mono mb-4 flex items-center gap-2">
-              <span className="h-px w-8 bg-brass/70" />
-              Section 02
-            </p>
-            <h2 className="font-display text-[clamp(2.75rem,7vw,5.5rem)] leading-[0.86] tracking-[0.01em] text-parchment-100">
-              ACTIVE
-              <br />
-              DOSSIERS
-            </h2>
-          </div>
+        <SectionHead
+          number="02"
+          kicker="Section 02 · The archive"
+          title="Active dossiers"
+          counter="02 / 03"
+          note="Index"
+        />
 
-          <div className="max-w-sm">
-            <p className="text-[14px] leading-relaxed text-parchment-400">
-              Three incidents are held in the archive. One has been declassified for
-              investigation. The remainder are sealed until their release window opens.
-            </p>
-            <p className="mt-4 font-mono text-[9.5px] uppercase tracking-widest2 text-parchment-600">
-              01 released · 02 sealed · Rotation 14 AUG 2026
-            </p>
-          </div>
-        </motion.div>
+        <div className="mt-10 grid gap-4 lg:grid-cols-12">
+          <motion.p
+            initial={reduce ? false : { opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            className="col-span-12 text-[15px] leading-relaxed text-parchment-400 lg:col-span-5 lg:pr-10 lg:text-[15.5px]"
+          >
+            Three incidents are held in the archive. <span className="text-parchment-200">One</span> has been declassified for investigation. The remainder are{" "}
+            <span className="text-burgundy-light">sealed</span> until their release window opens.
+            Cards become interactive at release.
+          </motion.p>
 
-        <div className="mt-12 h-px w-full bg-parchment-500/12" />
+          <motion.dl
+            initial={reduce ? false : { opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="col-span-12 grid grid-cols-3 gap-px border border-parchment-500/12 bg-parchment-500/12 lg:col-span-7"
+          >
+            {[
+              { l: "Released", v: "01", tone: "text-signal-openGlow" },
+              { l: "Sealed", v: "02", tone: "text-burgundy-light" },
+              { l: "Evidence", v: "12", tone: "text-parchment-100" },
+            ].map((s) => (
+              <div key={s.l} className="bg-ink-900 px-5 py-4">
+                <dt className="label-mono">{s.l}</dt>
+                <dd className={"mt-1.5 font-display text-[36px] leading-none tracking-wide " + s.tone}>
+                  {s.v}
+                </dd>
+              </div>
+            ))}
+          </motion.dl>
+        </div>
 
-        {/* cards */}
         <div className="mt-12 grid gap-6 lg:grid-cols-3">
           {cases.map((c, i) => (
             <motion.div

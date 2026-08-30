@@ -4,16 +4,18 @@ import * as React from "react";
 import { useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-/** Fixed film-grain + vignette layer. Never intercepts pointer events. */
+/**
+ * Subtle film grain overlay.
+ *
+ * Light texture: a page-wide noise pass helps dark surfaces read as
+ * physical paper / carbon rather than pure black. The previous vignette
+ * was darkening content so the layer now carries only grain.
+ */
 export function Grain({ className }: { className?: string }) {
   return (
     <div
       aria-hidden
       className={cn("pointer-events-none fixed inset-0 z-[60] grain", className)}
-      style={{
-        background:
-          "radial-gradient(120% 90% at 50% 0%, transparent 35%, rgba(0,0,0,0.42) 80%, rgba(0,0,0,0.72) 100%)",
-      }}
     />
   );
 }
