@@ -18,9 +18,9 @@ type Progress = ReturnType<typeof useScroll>["scrollYProgress"];
 
 function JourneyLetter({ letter, index, progress, reduce }: { letter: string; index: number; progress: Progress; reduce: boolean | null }) {
   const stage = 0.2 + index * 0.145;
-  const opacity = useTransform(progress, [0, 0.08, Math.max(0.1, stage - 0.07), stage, 1], [0.78, 0.46, 0.2, 1, 1]);
-  const brightness = useTransform(progress, [0, Math.max(0, stage - 0.06), stage, 1], [0.72, 0.42, 1.32, 1]);
-  const filter = useTransform(brightness, (value) => `brightness(${value}) contrast(1.08)`);
+  const opacity = useTransform(progress, [0, 0.1, Math.max(0.11, stage - 0.07), stage, Math.min(0.94, stage + 0.08), 1], [1, 1, 0.12, 1, 0.15, 0.82]);
+  const brightness = useTransform(progress, [Math.max(0, stage - 0.06), stage, Math.min(1, stage + 0.07)], [0.55, 1.45, 0.55]);
+  const filter = useTransform(brightness, (value) => `brightness(${value})`);
   return <motion.span className={`journey-letter journey-letter-${index + 1}`} style={reduce ? undefined : { opacity, filter }}>{letter}</motion.span>;
 }
 
