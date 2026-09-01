@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import * as React from "react";
-import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowDown, ArrowUpRight, LockKeyhole } from "lucide-react";
 import { CASES } from "@/data/trace";
 
@@ -14,22 +14,35 @@ const STEPS = [
   { letter: "E", word: "EXAMINE", copy: "Test the reconstruction against every artifact." },
 ];
 
-type Progress = ReturnType<typeof useScroll>["scrollYProgress"];
+const INTRO_DURATION = 2400;
+const STAGE_DURATION = 1150;
 
-function JourneyLetter({ letter, index, progress, reduce }: { letter: string; index: number; progress: Progress; reduce: boolean | null }) {
-  const stage = 0.2 + index * 0.145;
-  const opacity = useTransform(progress, [0, 0.1, Math.max(0.11, stage - 0.07), stage, Math.min(0.94, stage + 0.08), 1], [1, 1, 0.12, 1, 0.15, 0.82]);
-  const brightness = useTransform(progress, [Math.max(0, stage - 0.06), stage, Math.min(1, stage + 0.07)], [0.55, 1.45, 0.55]);
-  const filter = useTransform(brightness, (value) => `brightness(${value})`);
-  return <motion.span className={`journey-letter journey-letter-${index + 1}`} style={reduce ? undefined : { opacity, filter }}>{letter}</motion.span>;
+function JourneyLetter({ letter, index, activeStage, reduce }: { letter: string; index: number; activeStage: number; reduce: boolean | null }) {
+  const resting = activeStage < 0 || activeStage >= STEPS.length;
+  const active = activeStage === index;
+  const opacity = resting || active ? 1 : 0.14;
+  const brightness = resting ? 1 : active ? 1.45 : 0.55;
+  return (
+    <motion.span
+      className={`journey-letter journey-letter-${index + 1}`}
+      animate={reduce ? undefined : { opacity, filter: `brightness(${brightness})` }}
+      transition={{ duration: 0.48, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <span className="journey-letter-glyph">{letter}</span>
+    </motion.span>
+  );
 }
 
-function JourneyStep({ step, index, progress, reduce }: { step: (typeof STEPS)[number]; index: number; progress: Progress; reduce: boolean | null }) {
-  const stage = 0.2 + index * 0.145;
-  const opacity = useTransform(progress, [stage - 0.07, stage, stage + 0.08], [0, 1, 0]);
-  const x = useTransform(progress, [stage - 0.07, stage, stage + 0.08], [index % 2 ? -90 : 90, 0, index % 2 ? 55 : -55]);
+function JourneyStep({ step, index, activeStage, reduce }: { step: (typeof STEPS)[number]; index: number; activeStage: number; reduce: boolean | null }) {
+  const active = activeStage === index;
+  const inactiveX = activeStage > index ? (index % 2 ? 55 : -55) : (index % 2 ? -90 : 90);
   return (
-    <motion.article className={`journey-step journey-step-${index + 1}`} style={reduce ? undefined : { opacity, x }}>
+    <motion.article
+      className={`journey-step journey-step-${index + 1}`}
+      initial={false}
+      animate={reduce ? undefined : { opacity: active ? 1 : 0, x: active ? 0 : inactiveX }}
+      transition={{ duration: 0.46, ease: [0.22, 1, 0.36, 1] }}
+    >
       <span>{step.letter}</span>
       <div><h2>{step.word}</h2><p>{step.copy}</p></div>
     </motion.article>
@@ -37,20 +50,11 @@ function JourneyStep({ step, index, progress, reduce }: { step: (typeof STEPS)[n
 }
 
 function TraceJourney() {
-  const ref = React.useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
   const [lightning, setLightning] = React.useState<"quiet" | "distant" | "strong" | "after">("quiet");
   const [strike, setStrike] = React.useState(0);
   const [activeStage, setActiveStage] = React.useState(-1);
-  const stageRef = React.useRef(-1);
   const flashTimers = React.useRef<number[]>([]);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
-  const wordScale = useTransform(scrollYProgress, [0, 0.11, 0.45, 0.88, 1], [1, 1, 0.77, 1.05, 0.66]);
-  const wordX = useTransform(scrollYProgress, [0, 0.22, 0.5, 0.82, 1], ["0vw", "7vw", "-8vw", "5vw", "0vw"]);
-  const wordY = useTransform(scrollYProgress, [0, 0.1, 0.5, 0.9, 1], ["0vh", "-4vh", "4vh", "-3vh", "0vh"]);
-  const introOpacity = useTransform(scrollYProgress, [0, 0.07, 0.12], [1, 1, 0]);
-  const cloudShift = useTransform(scrollYProgress, [0, 1], ["-7%", "8%"]);
-  const cloudReverse = useTransform(cloudShift, (value) => `calc(${value} * -0.72)`);
 
   const fireLightning = React.useCallback((kind: "distant" | "strong") => {
     if (reduce) return;
@@ -67,54 +71,47 @@ function TraceJourney() {
 
   React.useEffect(() => {
     if (reduce) return;
-    let stopped = false;
-    let timer = 0;
-    const schedule = () => {
-      timer = window.setTimeout(() => {
-        if (stopped) return;
-        fireLightning(Math.random() > 0.62 ? "strong" : "distant");
-        schedule();
-      }, 3800 + Math.random() * 5200);
-    };
     const opening = window.setTimeout(() => fireLightning("strong"), 720);
-    schedule();
     return () => {
-      stopped = true;
-      window.clearTimeout(timer);
       window.clearTimeout(opening);
       flashTimers.current.forEach(window.clearTimeout);
     };
   }, [fireLightning, reduce]);
 
-  useMotionValueEvent(scrollYProgress, "change", (value) => {
-    const nextStage = STEPS.reduce((found, _, index) => value >= 0.16 + index * 0.145 ? index : found, -1);
-    if (nextStage === stageRef.current) return;
-    stageRef.current = nextStage;
-    setActiveStage(nextStage);
-    if (nextStage >= 0) fireLightning(nextStage === 3 || nextStage === 4 ? "strong" : "distant");
-  });
+  React.useEffect(() => {
+    if (reduce) return;
+    const sequenceTimers = STEPS.map((_, index) => window.setTimeout(() => {
+      setActiveStage(index);
+      fireLightning(index >= 3 ? "strong" : "distant");
+    }, INTRO_DURATION + index * STAGE_DURATION));
+    sequenceTimers.push(window.setTimeout(() => setActiveStage(STEPS.length), INTRO_DURATION + STEPS.length * STAGE_DURATION));
+    return () => sequenceTimers.forEach(window.clearTimeout);
+  }, [fireLightning, reduce]);
+
+  const resting = activeStage < 0 || activeStage >= STEPS.length;
+  const sequenceProgress = activeStage < 0 ? 0 : activeStage >= STEPS.length ? 1 : (activeStage + 1) / STEPS.length;
 
   return (
-    <section ref={ref} id="trace-journey" className="trace-journey" aria-label="TRACE — Track, Retrieve, Analyze, Correlate, Examine">
+    <section id="trace-journey" className="trace-journey" aria-label="TRACE — Track, Retrieve, Analyze, Correlate, Examine">
       <div className={`journey-sticky lightning-${lightning} storm-stage-${activeStage + 1}`}>
         <div className="storm-depth" />
-        <motion.div className="storm-cloud storm-cloud-far" style={reduce ? undefined : { x: cloudReverse }} />
-        <motion.div className="storm-cloud storm-cloud-mid" style={reduce ? undefined : { x: cloudShift }} />
-        <motion.div className="storm-cloud storm-cloud-near" style={reduce ? undefined : { x: cloudReverse }} />
+        <div className="storm-cloud storm-cloud-far" />
+        <div className="storm-cloud storm-cloud-mid" />
+        <div className="storm-cloud storm-cloud-near" />
         <div className="storm-illumination" />
         {lightning === "strong" && <svg key={strike} className="storm-bolt" viewBox="0 0 1000 700" aria-hidden="true"><path d="M744 -30 690 112l-40 28 22 51-73 67 17 46-109 102"/><path d="m651 139-71 5-43 53"/><path d="m614 303-69 19-31 59"/></svg>}
         <div className="storm-vignette" />
-        <motion.div className="journey-word" style={reduce ? undefined : { scale: wordScale, x: wordX, y: wordY }}>
-          {"TRACE".split("").map((letter, index) => <JourneyLetter key={letter} letter={letter} index={index} progress={scrollYProgress} reduce={reduce} />)}
+        <h1 className="sr-only">TRACE — Cybercrime Investigation Challenge</h1>
+        <div className="journey-word">
+          {"TRACE".split("").map((letter, index) => <JourneyLetter key={letter} letter={letter} index={index} activeStage={activeStage} reduce={reduce} />)}
           <span className="journey-engraving" />
-        </motion.div>
-        <motion.div className="journey-intro" style={reduce ? undefined : { opacity: introOpacity }}>
-          <h1 className="sr-only">TRACE — Cybercrime Investigation Challenge</h1>
+        </div>
+        <motion.div className={`journey-intro ${resting ? "" : "is-hidden"}`} animate={reduce ? undefined : { opacity: resting ? 1 : 0 }} transition={{ duration: 0.35 }}>
           <p>Cybercrime investigation challenge</p>
-          <a href="#cases"><ArrowDown /><span>Enter TRACE</span></a>
+          <a href="#cases" tabIndex={resting ? 0 : -1}><ArrowDown /><span>Enter TRACE</span></a>
         </motion.div>
-        {STEPS.map((step, index) => <JourneyStep key={step.letter} step={step} index={index} progress={scrollYProgress} reduce={reduce} />)}
-        <motion.div className="journey-progress" style={{ scaleX: scrollYProgress }} />
+        {STEPS.map((step, index) => <JourneyStep key={step.letter} step={step} index={index} activeStage={activeStage} reduce={reduce} />)}
+        <motion.div className="journey-progress" animate={{ scaleX: sequenceProgress }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} />
       </div>
     </section>
   );
