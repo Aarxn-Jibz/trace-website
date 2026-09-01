@@ -28,7 +28,7 @@ export function CaseExperience({ traceCase }: { traceCase: TraceCase }) {
       <section className="case-hero">
         <motion.span initial={reduce ? false : { x: "-12vw" }} animate={{ x: 0 }} transition={{ duration: 0.8 }} className="case-ghost">{traceCase.number}</motion.span>
         <p>{locked ? "SEALED" : "RELEASED"}</p>
-        <h1>CASE <em>{traceCase.number}</em></h1>
+        <h1 data-case-heading tabIndex={-1}>CASE <em>{traceCase.number}</em></h1>
         <div className="case-rule" />
         <p className="case-intro">{locked ? "This investigation is not yet available." : "Inspect the evidence. Correlate the traces. Reconstruct what happened."}</p>
       </section>

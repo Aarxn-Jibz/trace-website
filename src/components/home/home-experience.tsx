@@ -5,6 +5,7 @@ import * as React from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowDown, ArrowUpRight, LockKeyhole } from "lucide-react";
 import { CASES } from "@/data/trace";
+import { shouldUseCaseTransition, useCaseTransition } from "@/components/transitions/case-transition-provider";
 
 const STEPS = [
   { letter: "T", word: "TRACK", copy: "Follow activity across systems and time." },
@@ -118,6 +119,7 @@ function TraceJourney() {
 }
 
 function Cases() {
+  const { startCaseOneTransition } = useCaseTransition();
   return (
     <section id="cases" className="case-arrival">
       <header className="case-arrival-head"><p>Three investigations</p><h2>The traces are waiting.</h2></header>
@@ -131,7 +133,11 @@ function Cases() {
               {released ? <span className="dossier-action">OPEN DOSSIER</span> : <span className="seal-line" />}
             </motion.article>
           );
-          return released ? <Link key={item.id} href={`/case/${item.id}`} aria-label={`Open Case ${item.number}`}>{body}</Link> : <div key={item.id}>{body}</div>;
+          return released ? <Link key={item.id} href={`/case/${item.id}`} aria-label={`Open Case ${item.number}`} onClick={item.id === "1" ? (event) => {
+            if (!shouldUseCaseTransition(event)) return;
+            event.preventDefault();
+            startCaseOneTransition();
+          } : undefined}>{body}</Link> : <div key={item.id}>{body}</div>;
         })}
       </div>
     </section>
@@ -139,12 +145,17 @@ function Cases() {
 }
 
 export function HomeExperience() {
+  const { startCaseOneTransition } = useCaseTransition();
   return (
     <main className="home-shell">
       <header className="site-mark"><Link href="/">TRACE</Link><a href="#cases">CASES <span>↘</span></a></header>
       <TraceJourney />
       <Cases />
-      <footer className="home-footer"><span>TRACK · RETRIEVE · ANALYZE · CORRELATE · EXAMINE</span><Link href="/case/1">BEGIN CASE 01 →</Link></footer>
+      <footer className="home-footer"><span>TRACK · RETRIEVE · ANALYZE · CORRELATE · EXAMINE</span><Link href="/case/1" onClick={(event) => {
+        if (!shouldUseCaseTransition(event)) return;
+        event.preventDefault();
+        startCaseOneTransition();
+      }}>BEGIN CASE 01 →</Link></footer>
     </main>
   );
 }

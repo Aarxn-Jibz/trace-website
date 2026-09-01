@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CaseTransitionProvider } from "@/components/transitions/case-transition-provider";
 import "@fontsource/cinzel-decorative/700.css";
 import "@fontsource/cormorant-garamond/500.css";
 import "@fontsource/cormorant-garamond/600.css";
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body><CaseTransitionProvider>{children}</CaseTransitionProvider></body>
     </html>
   );
 }
