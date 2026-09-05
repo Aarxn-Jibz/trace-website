@@ -3,7 +3,7 @@
 import * as React from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ChevronDown, ChevronUp, Download, FileText, Search, X } from "lucide-react";
+import { ChevronDown, ChevronUp, FileText, Search, X } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { EvidenceFile } from "@/data/trace";
@@ -30,13 +30,6 @@ function TextViewer({ text, query, current }: { text: string; query: string; cur
     const lineOffset = offset; offset += result.count;
     return <div className="code-line" key={lineIndex}><span>{lineIndex + 1}</span><code>{result.parts.map((part, index) => part.match ? <mark id={`trace-match-${lineOffset + (part.matchIndex ?? 0)}`} className={lineOffset + (part.matchIndex ?? 0) === current ? "current" : ""} key={index}>{part.text}</mark> : <React.Fragment key={index}>{part.text}</React.Fragment>)}</code></div>;
   })}</div>;
-}
-
-function downloadMock(file: EvidenceFile) {
-  const blob = new Blob([file.content], { type: "application/octet-stream" });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url; anchor.download = file.name; anchor.click(); URL.revokeObjectURL(url);
 }
 
 const StaticRichViewer = React.memo(function StaticRichViewer({ file }: { file: EvidenceFile }) {
@@ -101,11 +94,11 @@ function RichTextViewer({ file, query, current }: { file: EvidenceFile; query: s
 function FileViewer({ file, query, current }: { file: EvidenceFile; query: string; current: number }) {
   if (file.type === "text") return <TextViewer text={file.content} query={query} current={current} />;
   if (file.type !== "unsupported") return <RichTextViewer file={file} query={query} current={current} />;
-  return <div className="unsupported"><div className="memory-basin"><Image src="/images/pensieve-basin.png" width={768} height={512} sizes="(max-width: 800px) 80vw, 430px" alt="An enchanted stone memory basin filled with silver light" priority unoptimized /></div><h2>The memory resists this chamber.</h2><p>Perhaps a tool called {file.tool} might be able to open this.</p><button onClick={() => downloadMock(file)}><Download /> DOWNLOAD {file.name}</button></div>;
+  return <div className="unsupported"><div className="memory-basin"><Image src="/images/pensieve-basin.png" width={768} height={512} sizes="(max-width: 800px) 80vw, 430px" alt="An enchanted stone memory basin filled with silver light" priority unoptimized /></div><h2>The memory resists this chamber.</h2><p>This artifact requires {file.tool} to inspect.</p></div>;
 }
 
-export function Workstation({ files, initialFile, onClose }: { files: EvidenceFile[]; initialFile: EvidenceFile; onClose: () => void }) {
-  const [file, setFile] = React.useState<EvidenceFile | null>(initialFile);
+export function Workstation({ files, onClose }: { files: EvidenceFile[]; onClose: () => void }) {
+  const [file, setFile] = React.useState<EvidenceFile | null>(null);
   const [query, setQuery] = React.useState("");
   const [searchOpen, setSearchOpen] = React.useState(false);
   const [current, setCurrent] = React.useState(0);
