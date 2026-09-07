@@ -1,4 +1,4 @@
-export type ViewerType = "text" | "markdown" | "csv" | "json" | "unsupported";
+export type ViewerType = "text" | "markdown" | "csv" | "json" | "pcap" | "unsupported";
 export type ReleaseStatus = "released" | "locked";
 
 export interface EvidenceFile {
@@ -58,7 +58,7 @@ const MOCK_EVIDENCE: EvidenceFile[] = [
   {
     id: "capture",
     name: "capture.pcap",
-    type: "unsupported",
+    type: "pcap",
     size: "4.1 MB",
     content: "",
     tool: "Wireshark",

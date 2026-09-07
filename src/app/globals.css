@@ -142,3 +142,4 @@ mark { background:#6294b15c;color:#102c3d;outline-color:#326b8d80; } mark.curren
 /* The alchemy lab uses the Files workstation's paper-plane departure. */
 .cyberchef-flight { position:relative;width:min(1500px,95vw);height:min(880px,92vh);transform-style:preserve-3d;will-change:transform; }.cyberchef-chamber { width:100%;height:100%; }
 @media (max-width:800px) { .cyberchef-flight { width:100vw;height:100svh; } }
+.webshark-backdrop { background:radial-gradient(circle at 50% 42%,#173b42de,#050707f5 70%); }.webshark-topbar { background:linear-gradient(90deg,#839e96,#b8c8aa 48%,#91aaa0); }.webshark-loader { background:radial-gradient(circle at 50% 44%,#d0d8b7,#93a986 58%,#5c766d); }.webshark-loader .muggle-progress i { background:linear-gradient(90deg,#4a7f76,#e1edc2,#4e8da0); }.webshark-footer { background:#a7b99a; }
