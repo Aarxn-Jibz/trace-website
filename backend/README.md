@@ -6,7 +6,9 @@ routes yet.
 ## Planned responsibilities
 
 - Authorize a viewer before any evidence or WebShark launch is exposed.
-- Read artifacts from S3-compatible object storage (MinIO locally).
+- Read artifacts from a server-local evidence root. Each manifest entry must
+  contain only a validated relative path; client input must never become a
+  filesystem path.
 - Use Redis for TTL-cached rendered pages, per-viewer page-layout seeds,
   watermark metadata, sessions, and rate limits.
 - Render text/log evidence into deterministic per-viewer pages of 75–150 lines.

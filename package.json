@@ -5,15 +5,14 @@
   "scripts": {
     "dev": "next dev",
     "api:dev": "bun --watch backend/src/index.ts",
-    "services:up": "docker compose up -d redis minio webshark",
-    "services:down": "docker compose down",
+    "webshark:up": "docker compose up -d webshark",
+    "webshark:down": "docker compose down",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1127.0",
     "@fontsource/cinzel-decorative": "^5.2.5",
     "@fontsource/cormorant-garamond": "^5.2.5",
     "@fontsource/dm-mono": "^5.2.5",

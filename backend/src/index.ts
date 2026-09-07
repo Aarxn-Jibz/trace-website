@@ -9,8 +9,9 @@ import { Hono } from "hono";
  * - /cases/:caseId/evidence/:evidenceId/pcap: a WebShark launch descriptor
  *
  * Page responses will use Redis TTL caching and contain a per-viewer watermark.
- * Artifacts belong in S3-compatible object storage, never Redis. Redis stores
- * cache entries, viewer sessions, page-shape seeds, and rate-limit state only.
+ * Artifacts live below the server-local evidence root, never Redis. Redis
+ * stores cache entries, viewer sessions, page-shape seeds, and rate-limit
+ * state only.
  */
 export const app = new Hono();
 
@@ -23,9 +24,8 @@ export type EvidencePagePolicy = {
 };
 
 export type EvidenceStorage = {
-  kind: "s3-compatible";
-  bucket: string;
-  objectKey: string;
+  kind: "server-filesystem";
+  relativePath: string;
 };
 
 export type PcapLaunchPolicy = {
