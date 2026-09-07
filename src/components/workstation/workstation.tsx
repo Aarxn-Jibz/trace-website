@@ -8,6 +8,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { EvidenceFile } from "@/data/trace";
 import { ProtectedViewer } from "@/components/case/protected-viewer";
+import { WebSharkWorkstation } from "@/components/webshark/webshark-workstation";
 
 type MatchPart = { text: string; match: boolean; matchIndex?: number };
 type SearchBeam = { id: number; x1: number; y1: number; x2: number; y2: number };
@@ -94,6 +95,7 @@ function RichTextViewer({ file, query, current }: { file: EvidenceFile; query: s
 
 function FileViewer({ file, query, current }: { file: EvidenceFile; query: string; current: number }) {
   if (file.type === "text") return <TextViewer text={file.content} query={query} current={current} />;
+  if (file.type === "pcap") return <div className="unsupported"><h2>This capture opens in WebShark.</h2><p>Select it again to begin packet analysis.</p></div>;
   if (file.type !== "unsupported") return <RichTextViewer file={file} query={query} current={current} />;
   return <div className="unsupported"><div className="memory-basin"><Image src="/images/pensieve-basin.png" width={768} height={512} sizes="(max-width: 800px) 80vw, 430px" alt="An enchanted stone memory basin filled with silver light" priority unoptimized /></div><h2>The memory resists this chamber.</h2><p>This artifact requires {file.tool} to inspect.</p></div>;
 }
@@ -106,10 +108,11 @@ export function Workstation({ files, onClose }: { files: EvidenceFile[]; onClose
   const [closing, setClosing] = React.useState(false);
   const [fileFlash, setFileFlash] = React.useState<"green" | "red" | null>("green");
   const [beam, setBeam] = React.useState<SearchBeam | null>(null);
+  const [pcapFile, setPcapFile] = React.useState<EvidenceFile | null>(null);
   const panelRef = React.useRef<HTMLElement>(null);
   const beamId = React.useRef(0);
   const reduce = useReducedMotion();
-  const searchable = Boolean(file && file.type !== "unsupported");
+  const searchable = Boolean(file && file.type !== "unsupported" && file.type !== "pcap");
   const count = searchable && file ? splitMatches(file.content, query).count : 0;
 
   React.useEffect(() => { if (fileFlash) { const timer = setTimeout(() => setFileFlash(null), 480); return () => clearTimeout(timer); } }, [fileFlash]);
@@ -155,7 +158,10 @@ export function Workstation({ files, onClose }: { files: EvidenceFile[]; onClose
   }, [current, count, query, reduce]);
 
   function navigate(direction: number) { if (count) setCurrent((value) => (value + direction + count) % count); }
-  function choose(next: EvidenceFile) { setFileFlash("green"); setFile(next); setQuery(""); setCurrent(0); setSearchOpen(false); }
+  function choose(next: EvidenceFile) {
+    if (next.type === "pcap") { setPcapFile(next); return; }
+    setFileFlash("green"); setFile(next); setQuery(""); setCurrent(0); setSearchOpen(false);
+  }
   function closeFile() { setFileFlash("red"); setTimeout(() => { setFile(null); setQuery(""); setSearchOpen(false); }, 180); }
   function closeWorkstation() { setClosing(true); setTimeout(onClose, reduce ? 100 : 1380); }
 
@@ -184,6 +190,7 @@ export function Workstation({ files, onClose }: { files: EvidenceFile[]; onClose
         </div>
         </motion.div>
       </motion.div>
+      <AnimatePresence>{pcapFile && <WebSharkWorkstation fileName={pcapFile.name} onClose={() => setPcapFile(null)} />}</AnimatePresence>
     </motion.div>
   );
 }
