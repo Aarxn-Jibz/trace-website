@@ -6,7 +6,6 @@ export interface EvidenceFile {
   name: string;
   type: ViewerType;
   size: string;
-  content: string;
   tool?: string;
   /** Safe basename of the capture mounted in WebShark's /captures directory. */
   webSharkCaptureName?: string;
@@ -19,6 +18,15 @@ export interface TraceCase {
   evidence: EvidenceFile[];
   evidenceCount?: number;
 }
+
+const MOCK_EVIDENCE: EvidenceFile[] = [
+  { id: "auth", name: "auth.log", type: "text", size: "1.8 KB" },
+  { id: "workstation", name: "workstation.log", type: "text", size: "1.2 KB" },
+  { id: "users", name: "users.csv", type: "csv", size: "624 B" },
+  { id: "notes", name: "incident_notes.md", type: "markdown", size: "811 B" },
+  { id: "metadata", name: "metadata.json", type: "json", size: "487 B" },
+  { id: "capture", name: "dns_tunnel.pcap", type: "pcap", size: "4.1 MB", tool: "Wireshark", webSharkCaptureName: "dns_tunnel.pcap" },
+];
 
 export const CASES: TraceCase[] = [
   // Evidence for this released case is loaded from CASE_05_SILENT_BEACON on

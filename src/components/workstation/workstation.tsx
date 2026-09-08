@@ -12,6 +12,7 @@ import { WebSharkWorkstation } from "@/components/webshark/webshark-workstation"
 
 type MatchPart = { text: string; match: boolean; matchIndex?: number };
 type SearchBeam = { id: number; x1: number; y1: number; x2: number; y2: number };
+type SearchMeta = { q: string; total: number; perPage: number[] };
 
 function splitMatches(text: string, query: string): { parts: MatchPart[]; count: number } {
   if (!query.trim()) return { parts: [{ text, match: false }], count: 0 };
@@ -25,25 +26,26 @@ function splitMatches(text: string, query: string): { parts: MatchPart[]; count:
   return { parts, count };
 }
 
-function TextViewer({ text, query, current }: { text: string; query: string; current: number }) {
+function TextViewer({ lines, page, pageSize, base, query, current }: { lines: string[]; page: number; pageSize: number; base: number; query: string; current: number }) {
   let offset = 0;
-  return <div className="text-viewer">{text.split("\n").map((line, lineIndex) => {
+  const startLine = (page - 1) * pageSize + 1;
+  return <div className="text-viewer">{lines.map((line, lineIndex) => {
     const result = splitMatches(line, query);
     const lineOffset = offset; offset += result.count;
-    return <div className="code-line" key={lineIndex}><span>{lineIndex + 1}</span><code>{result.parts.map((part, index) => part.match ? <mark id={`trace-match-${lineOffset + (part.matchIndex ?? 0)}`} className={lineOffset + (part.matchIndex ?? 0) === current ? "current" : ""} key={index}>{part.text}</mark> : <React.Fragment key={index}>{part.text}</React.Fragment>)}</code></div>;
+    return <div className="code-line" key={lineIndex}><span>{startLine + lineIndex}</span><code>{result.parts.map((part, index) => part.match ? <mark id={`trace-match-${base + lineOffset + (part.matchIndex ?? 0)}`} className={base + lineOffset + (part.matchIndex ?? 0) === current ? "current" : ""} key={index}>{part.text}</mark> : <React.Fragment key={index}>{part.text}</React.Fragment>)}</code></div>;
   })}</div>;
 }
 
-const StaticRichViewer = React.memo(function StaticRichViewer({ file }: { file: EvidenceFile }) {
-  if (file.type === "markdown") return <article className="markdown-viewer"><ReactMarkdown remarkPlugins={[remarkGfm]}>{file.content}</ReactMarkdown></article>;
+const StaticRichViewer = React.memo(function StaticRichViewer({ file, fileContent }: { file: EvidenceFile; fileContent: string }) {
+  if (file.type === "markdown") return <article className="markdown-viewer"><ReactMarkdown remarkPlugins={[remarkGfm]}>{fileContent}</ReactMarkdown></article>;
   if (file.type === "csv") {
-    const rows = file.content.split("\n").map((row) => row.split(","));
+    const rows = fileContent.split("\n").map((row) => row.split(","));
     return <div className="csv-wrap"><table><thead><tr>{rows[0].map((cell) => <th key={cell}>{cell}</th>)}</tr></thead><tbody>{rows.slice(1).map((row, i) => <tr key={i}>{row.map((cell, j) => <td key={j}>{cell}</td>)}</tr>)}</tbody></table></div>;
   }
-  return <pre className="json-viewer">{JSON.stringify(JSON.parse(file.content), null, 2)}</pre>;
+  return <pre className="json-viewer">{JSON.stringify(JSON.parse(fileContent), null, 2)}</pre>;
 });
 
-function RichTextViewer({ file, query, current }: { file: EvidenceFile; query: string; current: number }) {
+function RichTextViewer({ file, fileContent, base, query, current }: { file: EvidenceFile; fileContent: string; base: number; query: string; current: number }) {
   const rootRef = React.useRef<HTMLDivElement>(null);
 
   React.useLayoutEffect(() => {
@@ -72,8 +74,8 @@ function RichTextViewer({ file, query, current }: { file: EvidenceFile; query: s
         fragment.append(text.slice(cursor, match.index));
         const mark = document.createElement("mark");
         mark.dataset.traceSearch = "true";
-        mark.id = `trace-match-${matchIndex}`;
-        if (matchIndex === current) mark.className = "current";
+        mark.id = `trace-match-${base + matchIndex}`;
+        if (base + matchIndex === current) mark.className = "current";
         mark.textContent = match[0];
         fragment.append(mark);
         matchIndex += 1;
@@ -88,21 +90,29 @@ function RichTextViewer({ file, query, current }: { file: EvidenceFile; query: s
       root.querySelectorAll("mark[data-trace-search]").forEach((mark) => mark.replaceWith(document.createTextNode(mark.textContent ?? "")));
       root.normalize();
     };
-  }, [current, query]);
+  }, [base, current, fileContent, query]);
 
-  return <div ref={rootRef}><StaticRichViewer file={file} /></div>;
+  return <div ref={rootRef}><StaticRichViewer file={file} fileContent={fileContent} /></div>;
 }
 
-function FileViewer({ file, query, current }: { file: EvidenceFile; query: string; current: number }) {
-  if (file.type === "text") return <TextViewer text={file.content} query={query} current={current} />;
+function FileViewer({ file, lines, page, pageSize, base, query, current }: { file: EvidenceFile; lines: string[]; page: number; pageSize: number; base: number; query: string; current: number }) {
+  const fileContent = lines.join("\n");
+  if (file.type === "text") return <TextViewer lines={lines} page={page} pageSize={pageSize} base={base} query={query} current={current} />;
   if (file.type === "pcap") return <div className="unsupported"><h2>This capture opens in WebShark.</h2><p>Select it again to begin packet analysis.</p></div>;
-  if (file.type !== "unsupported") return <RichTextViewer file={file} query={query} current={current} />;
+  if (file.type !== "unsupported") return <RichTextViewer file={file} fileContent={fileContent} base={base} query={query} current={current} />;
   return <div className="unsupported"><div className="memory-basin"><Image src="/images/pensieve-basin.png" width={768} height={512} sizes="(max-width: 800px) 80vw, 430px" alt="An enchanted stone memory basin filled with silver light" priority unoptimized /></div><h2>The memory resists this chamber.</h2><p>This artifact requires {file.tool} to inspect.</p></div>;
 }
 
-export function Workstation({ files, onClose }: { files: EvidenceFile[]; onClose: () => void }) {
+export function Workstation({ caseId, files, onClose }: { caseId: string; files: EvidenceFile[]; onClose: () => void }) {
   const [file, setFile] = React.useState<EvidenceFile | null>(null);
+  const [lines, setLines] = React.useState<string[]>([]);
+  const [page, setPage] = React.useState(1);
+  const [pageSize, setPageSize] = React.useState(200);
+  const [totalPages, setTotalPages] = React.useState(1);
+  const [searchMeta, setSearchMeta] = React.useState<SearchMeta | null>(null);
+  const [queryInput, setQueryInput] = React.useState("");
   const [query, setQuery] = React.useState("");
+  const [jumpNext, setJumpNext] = React.useState(false);
   const [searchOpen, setSearchOpen] = React.useState(false);
   const [current, setCurrent] = React.useState(0);
   const [closing, setClosing] = React.useState(false);
@@ -111,9 +121,14 @@ export function Workstation({ files, onClose }: { files: EvidenceFile[]; onClose
   const [pcapFile, setPcapFile] = React.useState<EvidenceFile | null>(null);
   const panelRef = React.useRef<HTMLElement>(null);
   const beamId = React.useRef(0);
+  const pendingMatch = React.useRef<number | null>(null);
   const reduce = useReducedMotion();
   const searchable = Boolean(file && file.type !== "unsupported" && file.type !== "pcap");
-  const count = searchable && file ? splitMatches(file.content, query).count : 0;
+  const count = searchMeta?.total ?? 0;
+  const before = React.useMemo(() => {
+    if (!searchMeta || searchMeta.perPage.length === 0) return 0;
+    return searchMeta.perPage.slice(0, Math.max(0, page - 1)).reduce((sum, n) => sum + n, 0);
+  }, [page, searchMeta]);
 
   React.useEffect(() => { if (fileFlash) { const timer = setTimeout(() => setFileFlash(null), 480); return () => clearTimeout(timer); } }, [fileFlash]);
   React.useEffect(() => {
@@ -121,6 +136,56 @@ export function Workstation({ files, onClose }: { files: EvidenceFile[]; onClose
     document.body.style.overflow = "hidden";
     return () => { document.body.style.overflow = previous; };
   }, []);
+
+  React.useEffect(() => {
+    const id = window.setTimeout(() => {
+      const value = queryInput.trim();
+      setQuery(value ? queryInput : "");
+      setJumpNext(Boolean(value));
+      setCurrent(0);
+    }, 250);
+    return () => window.clearTimeout(id);
+  }, [queryInput]);
+
+  React.useEffect(() => {
+    if (!file || file.type === "pcap" || file.type === "unsupported") {
+      setLines([]); setPage(1); setTotalPages(1); setSearchMeta(null);
+      return;
+    }
+    let cancelled = false;
+    const params = new URLSearchParams({ page: String(page) });
+    if (query) {
+      params.set("q", query);
+      if (jumpNext) params.set("jump", "1");
+    }
+    fetch(`/api/evidence/${caseId}/${file.id}?${params.toString()}`)
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        if (cancelled) return;
+        setLines(Array.isArray(data.lines) ? data.lines : []);
+        setPageSize(typeof data.pageSize === "number" && data.pageSize > 0 ? data.pageSize : 200);
+        setTotalPages(typeof data.totalPages === "number" && data.totalPages > 0 ? data.totalPages : 1);
+        setSearchMeta(data.search ?? null);
+        setPage(typeof data.page === "number" && data.page > 0 ? data.page : page);
+        if (pendingMatch.current !== null) {
+          const target = pendingMatch.current;
+          pendingMatch.current = null;
+          setCurrent(target);
+        }
+      })
+      .catch((err) => {
+        console.error("[workstation] evidence fetch failed:", err);
+        if (!cancelled) { setLines([]); setTotalPages(1); setSearchMeta(null); pendingMatch.current = null; }
+      })
+      .finally(() => {
+        if (!cancelled) setJumpNext(false);
+      });
+    return () => { cancelled = true; };
+  }, [caseId, file, jumpNext, page, query]);
+
   React.useEffect(() => {
     const handler = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
@@ -157,12 +222,41 @@ export function Workstation({ files, onClose }: { files: EvidenceFile[]; onClose
     return () => window.clearTimeout(timer);
   }, [current, count, query, reduce]);
 
-  function navigate(direction: number) { if (count) setCurrent((value) => (value + direction + count) % count); }
+  function navigate(direction: number) {
+    const total = searchMeta?.total ?? 0;
+    if (!total) return;
+    const target = (current + direction + total) % total;
+    const perPage = searchMeta?.perPage ?? [];
+    let targetPage = 1;
+    let acc = 0;
+    for (let i = 0; i < perPage.length; i += 1) {
+      if (target < acc + perPage[i]) { targetPage = i + 1; break; }
+      acc += perPage[i];
+    }
+    if (perPage.length > 0 && targetPage !== page) {
+      pendingMatch.current = target;
+      setPage(targetPage);
+    } else {
+      setCurrent(target);
+    }
+  }
   function choose(next: EvidenceFile) {
     if (next.type === "pcap") { setPcapFile(next); return; }
-    setFileFlash("green"); setFile(next); setQuery(""); setCurrent(0); setSearchOpen(false);
+    setFileFlash("green");
+    setFile(next);
+    setLines([]); setPage(1); setPageSize(200); setTotalPages(1);
+    setSearchMeta(null); setQueryInput(""); setQuery(""); setJumpNext(false);
+    pendingMatch.current = null; setCurrent(0); setSearchOpen(false);
   }
-  function closeFile() { setFileFlash("red"); setTimeout(() => { setFile(null); setQuery(""); setSearchOpen(false); }, 180); }
+  function gotoPage(next: number) {
+    if (next < 1 || next > totalPages || next === page) return;
+    pendingMatch.current = null;
+    setPage(next);
+    if (searchMeta && searchMeta.total > 0) {
+      setCurrent(searchMeta.perPage.slice(0, next - 1).reduce((sum, n) => sum + n, 0));
+    }
+  }
+  function closeFile() { setFileFlash("red"); setTimeout(() => { setFile(null); setLines([]); setPage(1); setTotalPages(1); setSearchMeta(null); setQueryInput(""); setQuery(""); pendingMatch.current = null; setCurrent(0); setSearchOpen(false); }, 180); }
   function closeWorkstation() { setClosing(true); setTimeout(onClose, reduce ? 100 : 1380); }
 
   return (
@@ -182,8 +276,8 @@ export function Workstation({ files, onClose }: { files: EvidenceFile[]; onClose
           <aside className="file-sidebar"><p>EVIDENCE</p>{files.map((item) => <button className={item.id === file?.id ? "active" : ""} onClick={() => choose(item)} key={item.id}><FileText /><span>{item.name}</span><small>{item.size}</small></button>)}</aside>
           <section className="viewer-panel" ref={panelRef}>
             <div className="viewer-toolbar"><span>{file?.type.toUpperCase() ?? "VIEWER"}</span><div>{file && <button onClick={closeFile} className="close-file" aria-label="Close file"><X /></button>}</div></div>
-            <AnimatePresence mode="wait">{file ? <motion.div key={file.id} className="viewer-content" initial={{ opacity: 0, clipPath: "inset(0 100% 0 0)" }} animate={{ opacity: 1, clipPath: "inset(0 0 0 0)" }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}><ProtectedViewer className="protected-viewer"><FileViewer file={file} query={query} current={current} /></ProtectedViewer></motion.div> : <motion.div key="empty" className="viewer-empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }}><FileText/><p>Select evidence to inspect</p></motion.div>}</AnimatePresence>
-            <AnimatePresence>{searchOpen && searchable && <motion.div className="search-box" initial={{ x: 24, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 10, opacity: 0 }}><Search /><input autoFocus value={query} onChange={(event) => { setQuery(event.target.value); setCurrent(0); }} placeholder="Find in evidence" aria-label="Find in evidence"/><span>{query ? `${count ? current + 1 : 0} / ${count}` : "0 / 0"}</span><button onClick={() => navigate(-1)} aria-label="Previous result"><ChevronUp /></button><button onClick={() => navigate(1)} aria-label="Next result"><ChevronDown /></button><button onClick={() => setSearchOpen(false)} aria-label="Close search"><X /></button>{query && <i className={count ? "search-magic" : "search-miss"} key={`${query}-${current}`} />}</motion.div>}</AnimatePresence>
+            <AnimatePresence mode="wait">{file ? <motion.div key={file.id} className="viewer-content" initial={{ opacity: 0, clipPath: "inset(0 100% 0 0)" }} animate={{ opacity: 1, clipPath: "inset(0 0 0 0)" }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}><ProtectedViewer className="protected-viewer"><FileViewer file={file} lines={lines} page={page} pageSize={pageSize} base={before} query={query} current={current} /></ProtectedViewer>{file.type !== "pcap" && file.type !== "unsupported" && <div className="evidence-pager"><button onClick={() => gotoPage(page - 1)} disabled={page <= 1}>← PREVIOUS</button><span>PAGE {page} / {totalPages}</span><button onClick={() => gotoPage(page + 1)} disabled={page >= totalPages}>NEXT →</button></div>}</motion.div> : <motion.div key="empty" className="viewer-empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }}><FileText/><p>Select evidence to inspect</p></motion.div>}</AnimatePresence>
+            <AnimatePresence>{searchOpen && searchable && <motion.div className="search-box" initial={{ x: 24, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 10, opacity: 0 }}><Search /><input autoFocus value={queryInput} onChange={(event) => { setQueryInput(event.target.value); }} placeholder="Find in evidence" aria-label="Find in evidence"/><span>{query ? `${count ? current + 1 : 0} / ${count}` : "0 / 0"}</span><button onClick={() => navigate(-1)} aria-label="Previous result"><ChevronUp /></button><button onClick={() => navigate(1)} aria-label="Next result"><ChevronDown /></button><button onClick={() => setSearchOpen(false)} aria-label="Close search"><X /></button>{query && <i className={count ? "search-magic" : "search-miss"} key={`${query}-${current}`} />}</motion.div>}</AnimatePresence>
             <AnimatePresence>{beam && <motion.svg key={beam.id} className="search-flight" viewBox={`0 0 ${Math.max(1, panelRef.current?.clientWidth ?? 1)} ${Math.max(1, panelRef.current?.clientHeight ?? 1)}`} preserveAspectRatio="none" initial={{ opacity: 1 }} exit={{ opacity: 0 }}><defs><filter id="blue-glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><motion.path d={`M ${beam.x1} ${beam.y1} C ${beam.x1 - 90} ${beam.y1 + 34}, ${beam.x2 + 90} ${beam.y2 - 34}, ${beam.x2} ${beam.y2}`} pathLength="1" fill="none" stroke="url(#search-gradient)" strokeWidth="3" strokeDasharray=".14 .86" filter="url(#blue-glow)" initial={{ strokeDashoffset: 1, opacity: 0 }} animate={{ strokeDashoffset: 0, opacity: [0, 1, 1, 0] }} transition={{ duration: .58, times: [0,.12,.82,1], ease: "easeOut" }}/><motion.circle cx={beam.x2} cy={beam.y2} r="9" fill="none" stroke="#aee3ff" strokeWidth="2" initial={{ scale: .2, opacity: 0 }} animate={{ scale: [0.2, 1.5], opacity: [0, .9, 0] }} transition={{ duration: .32, delay: .38 }}/><linearGradient id="search-gradient"><stop stopColor="#f4fbff"/><stop offset=".45" stopColor="#78bde9"/><stop offset="1" stopColor="#3277a8"/></linearGradient></motion.svg>}</AnimatePresence>
             {fileFlash && <motion.div className={`file-magic ${fileFlash}`} initial={{ scaleX: 0, opacity: 1 }} animate={{ scaleX: 1, opacity: 0 }} transition={{ duration: 0.45 }} />}
           </section>

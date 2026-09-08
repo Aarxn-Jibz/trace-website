@@ -37,7 +37,7 @@ export function CaseExperience({ traceCase }: { traceCase: TraceCase }) {
         </section>
       </>}
       <AnimatePresence>
-        {workstationOpen && <Workstation files={traceCase.evidence} onClose={() => setWorkstationOpen(false)} />}
+        {workstationOpen && <Workstation caseId={traceCase.id} files={traceCase.evidence} onClose={() => setWorkstationOpen(false)} />}
         {cyberChefOpen && <CyberChefWorkstation onClose={() => setCyberChefOpen(false)} />}
       </AnimatePresence>
     </main>

@@ -5,3 +5,8 @@ out
 *.log
 .shots
 *.tsbuildinfo
+
+# Local environment (secrets). Never commit.
+.env
+.env.local
+.env.*.local
