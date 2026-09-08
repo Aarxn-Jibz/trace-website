@@ -190,7 +190,7 @@ export function Workstation({ files, onClose }: { files: EvidenceFile[]; onClose
         </div>
         </motion.div>
       </motion.div>
-      <AnimatePresence>{pcapFile && <WebSharkWorkstation fileName={pcapFile.name} onClose={() => setPcapFile(null)} />}</AnimatePresence>
+      <AnimatePresence>{pcapFile && <WebSharkWorkstation fileName={pcapFile.name} captureName={pcapFile.webSharkCaptureName ?? pcapFile.name} onClose={() => setPcapFile(null)} />}</AnimatePresence>
     </motion.div>
   );
 }

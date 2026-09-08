@@ -7,11 +7,31 @@ import { ExternalLink, Network, X } from "lucide-react";
 const WEBSHARK_URL = process.env.NEXT_PUBLIC_WEBSHARK_URL ?? "http://localhost:8085/webshark/";
 const LOADING_DURATION = 1900;
 
-export function WebSharkWorkstation({ fileName, onClose }: { fileName: string; onClose: () => void }) {
+// WebShark's UI identifies a pre-mounted capture with this hash in location.hash.
+// Keep this in sync with QXIP/webshark-ui's hash helper.
+function webSharkHash(value: string, length = 32) {
+  const characters = value.split("").map((character) => character.charCodeAt(0));
+  const characterCount = characters.length || 1;
+  let index = characters.length ? characters.reduce((total, character) => total + character) : 1;
+  let result = "";
+  let cursor = 0;
+
+  while (result.length < length) {
+    const first = characters[cursor++ % characterCount] || 0.5;
+    const second = characters[(cursor++ % characterCount) ^ length] || (1.5 ^ length);
+    index += (first ^ second) % length;
+    result += Math.tan((index * second) / first).toString(16).split(".")[1]?.slice(0, 10) ?? "";
+  }
+
+  return result.slice(0, length);
+}
+
+export function WebSharkWorkstation({ fileName, captureName, onClose }: { fileName: string; captureName: string; onClose: () => void }) {
   const reduce = useReducedMotion();
   const [ready, setReady] = React.useState(false);
   const [closing, setClosing] = React.useState(false);
   const closeButton = React.useRef<HTMLButtonElement>(null);
+  const webSharkSrc = `${WEBSHARK_URL}#${encodeURIComponent(webSharkHash(captureName))}`;
 
   const closeChamber = React.useCallback(() => {
     if (closing) return;
@@ -50,7 +70,7 @@ export function WebSharkWorkstation({ fileName, onClose }: { fileName: string; o
             <button ref={closeButton} onClick={closeChamber} aria-label="Exit WebShark"><X /></button>
           </header>
           <div className="cyberchef-stage">
-            <iframe className={`cyberchef-frame ${ready ? "is-visible" : ""}`} src={WEBSHARK_URL} title={`WebShark — ${fileName}`} />
+            <iframe className={`cyberchef-frame ${ready ? "is-visible" : ""}`} src={webSharkSrc} title={`WebShark — ${fileName}`} />
             <AnimatePresence>
               {!ready && <motion.div className="muggle-loader webshark-loader" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                 <motion.div className="muggle-loader-sigil" animate={reduce ? undefined : { rotate: 360 }} transition={{ duration: 5, repeat: Infinity, ease: "linear" }}><Network /></motion.div>
@@ -60,7 +80,7 @@ export function WebSharkWorkstation({ fileName, onClose }: { fileName: string; o
               </motion.div>}
             </AnimatePresence>
           </div>
-          <footer className="cyberchef-footer webshark-footer"><span>WebShark · Wireshark packet analysis</span><a href={WEBSHARK_URL} target="_blank" rel="noreferrer"><ExternalLink /> OPEN IN NEW TAB</a></footer>
+          <footer className="cyberchef-footer webshark-footer"><span>WebShark · Wireshark packet analysis</span><a href={webSharkSrc} target="_blank" rel="noreferrer"><ExternalLink /> OPEN IN NEW TAB</a></footer>
         </motion.section>
       </motion.div>
     </motion.div>

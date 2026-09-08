@@ -8,6 +8,8 @@ export interface EvidenceFile {
   size: string;
   content: string;
   tool?: string;
+  /** Safe basename of the capture mounted in WebShark's /captures directory. */
+  webSharkCaptureName?: string;
 }
 
 export interface TraceCase {
@@ -57,11 +59,12 @@ const MOCK_EVIDENCE: EvidenceFile[] = [
   },
   {
     id: "capture",
-    name: "capture.pcap",
+    name: "dns_tunnel.pcap",
     type: "pcap",
     size: "4.1 MB",
     content: "",
     tool: "Wireshark",
+    webSharkCaptureName: "dns_tunnel.pcap",
   },
 ];
 

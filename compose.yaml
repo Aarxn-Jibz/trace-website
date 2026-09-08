@@ -6,4 +6,6 @@ services:
     ports:
       - "8085:8085"
     volumes:
-      - ./CASE_05_SILENT_BEACON/artifacts:/captures:ro
+      # Mount captures individually as read-only. WebShark must still be able to
+      # create its transient sharkd Unix socket in /captures.
+      - ./CASE_05_SILENT_BEACON/artifacts/dns_tunnel.pcap:/captures/dns_tunnel.pcap:ro
