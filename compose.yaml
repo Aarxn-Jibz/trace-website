@@ -5,7 +5,8 @@ services:
     image: ghcr.io/qxip/webshark:latest
     ports:
       - "8085:8085"
+    environment:
+      # Keep sharkd's ephemeral socket outside the read-only evidence mount.
+      SHARKD_SOCKET: /tmp/sharkd.sock
     volumes:
-      # Mount captures individually as read-only. WebShark must still be able to
-      # create its transient sharkd Unix socket in /captures.
-      - ./CASE_05_SILENT_BEACON/artifacts/dns_tunnel.pcap:/captures/dns_tunnel.pcap:ro
+      - ./CASE_05_SILENT_BEACON/artifacts:/captures:ro

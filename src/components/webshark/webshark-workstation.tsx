@@ -70,7 +70,7 @@ export function WebSharkWorkstation({ fileName, captureName, onClose }: { fileNa
             <button ref={closeButton} onClick={closeChamber} aria-label="Exit WebShark"><X /></button>
           </header>
           <div className="cyberchef-stage">
-            <iframe className={`cyberchef-frame ${ready ? "is-visible" : ""}`} src={webSharkSrc} title={`WebShark — ${fileName}`} />
+            <iframe className={`cyberchef-frame webshark-frame ${ready ? "is-visible" : ""}`} src={webSharkSrc} title={`WebShark — ${fileName}`} />
             <AnimatePresence>
               {!ready && <motion.div className="muggle-loader webshark-loader" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                 <motion.div className="muggle-loader-sigil" animate={reduce ? undefined : { rotate: 360 }} transition={{ duration: 5, repeat: Infinity, ease: "linear" }}><Network /></motion.div>
