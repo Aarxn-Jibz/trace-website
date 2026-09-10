@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
     const apiBase = `http://localhost:${apiPort}`;
     return [
       {
+        source: "/api/cases/:caseId/evidence",
+        destination: `${apiBase}/api/cases/:caseId/evidence`,
+      },
+      {
         source: "/api/evidence/:caseId/:fileId",
         destination: `${apiBase}/api/evidence/:caseId/:fileId`,
       },
