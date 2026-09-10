@@ -1,6 +1,6 @@
 import "server-only";
 
-import { readdir, readFile, stat } from "node:fs/promises";
+import { readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import type { EvidenceFile, ViewerType } from "@/data/trace";
 
@@ -38,7 +38,6 @@ export async function getCase05Evidence(): Promise<EvidenceFile[]> {
     const isPcap = type === "pcap";
     return {
       id: relativePath.replaceAll(path.sep, "-"), name, type, size: formatSize(info.size),
-      content: isPcap ? "" : await readFile(fullPath, "utf8"),
       ...(isPcap ? { tool: "Wireshark", webSharkCaptureName: name } : {}),
     } satisfies EvidenceFile;
   }));
