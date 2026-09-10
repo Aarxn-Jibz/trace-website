@@ -1,7 +1,0 @@
-19:44:02 process_start image=collector.exe pid=3840
-19:44:18 file_read path=C:\Evidence\users.csv pid=3840
-19:46:51 dns_query host=archive.local result=10.0.4.9
-19:48:10 process_start image=powershell.exe parent=collector.exe pid=4112
-19:48:16 network_connect destination=192.168.1.42:443 pid=4112
-19:50:01 file_write path=C:\Temp\export.tgz pid=4112
-19:58:38 process_exit image=powershell.exe pid=4112 code=0

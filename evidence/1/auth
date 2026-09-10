@@ -1,7 +1,0 @@
-2026-08-30T19:42:08Z sshd[2014]: Accepted publickey for analyst from 10.0.4.18
-2026-08-30T19:43:11Z sudo[2088]: analyst : TTY=pts/1 ; COMMAND=/usr/bin/systemctl status collector
-2026-08-30T19:47:33Z sshd[2190]: Failed password for invalid user backup from 192.168.1.42
-2026-08-30T19:47:36Z sshd[2190]: Failed password for invalid user backup from 192.168.1.42
-2026-08-30T19:48:02Z sshd[2211]: Accepted publickey for service from 192.168.1.42
-2026-08-30T19:51:14Z sudo[2298]: service : COMMAND=/usr/bin/tar -czf /tmp/export.tgz /var/log/collector
-2026-08-30T19:58:40Z sshd[2211]: Disconnected from user service 192.168.1.42

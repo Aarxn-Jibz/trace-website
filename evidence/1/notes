@@ -1,9 +1,0 @@
-# Incident notes
-
-The review window begins at **19:40 UTC**. Correlate authentication events with the workstation process log.
-
-## Working observations
-
-- The service account normally originates from the automation subnet.
-- An export archive appears shortly after the remote connection.
-- Validate any conclusion against more than one artifact.
