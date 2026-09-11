@@ -39,6 +39,19 @@ export function useLimitedCopy<T extends HTMLElement>(maxLines: number) {
       if (!event.clipboardData) return;
       const selection = window.getSelection();
       if (!selection || selection.isCollapsed) return;
+
+      // Ctrl/Cmd+A creates a document-wide selection, whose copy event is
+      // targeted at `document`/`body`, not necessarily at this viewer. Check
+      // the selection ranges instead so evidence remains capped in that case.
+      const includesViewer = Array.from({ length: selection.rangeCount }, (_, index) => {
+        try {
+          return selection.getRangeAt(index).intersectsNode(root);
+        } catch {
+          return false;
+        }
+      }).some(Boolean);
+      if (!includesViewer) return;
+
       const text = selection.toString();
       if (!text) return;
       const capped = capLines(text, maxLinesRef.current);
@@ -46,8 +59,10 @@ export function useLimitedCopy<T extends HTMLElement>(maxLines: number) {
       event.preventDefault();
     };
 
-    root.addEventListener("copy", onCopy);
-    return () => root.removeEventListener("copy", onCopy);
+    // Capture on document to see copies from document-wide selections before
+    // the event reaches body or another selected element.
+    document.addEventListener("copy", onCopy, true);
+    return () => document.removeEventListener("copy", onCopy, true);
   }, []);
 
   return ref;
