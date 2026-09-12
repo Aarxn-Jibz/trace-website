@@ -1,0 +1,17 @@
+FROM oven/bun:latest
+
+WORKDIR /app
+
+COPY backend/package.json ./
+RUN bun install --production
+
+COPY backend ./backend
+COPY CASE_05_SILENT_BEACON ./CASE_05_SILENT_BEACON
+
+ENV PORT=8787
+ENV API_PORT=8787
+ENV EVIDENCE_ROOT=CASE_05_SILENT_BEACON
+
+EXPOSE 8787
+
+CMD ["bun", "backend/src/index.ts"]
