@@ -101,7 +101,8 @@ function FileViewer({ file, lines, csvHeader, page, pageSize, base, query, curre
   const fileContent = lines.join("\n");
   if (file.type === "text") return <TextViewer lines={lines} page={page} pageSize={pageSize} base={base} query={query} current={current} />;
   if (file.type === "pcap") return <div className="unsupported"><h2>This capture opens in WebShark.</h2><p>Select it again to begin packet analysis.</p></div>;
-  if (file.type !== "unsupported") return <RichTextViewer file={file} fileContent={fileContent} csvHeader={csvHeader} csvStartLine={(page - 1) * pageSize + 1} base={base} query={query} current={current} />;
+  const csvStartLine = page === 1 ? 1 : (page - 1) * pageSize;
+  if (file.type !== "unsupported") return <RichTextViewer file={file} fileContent={fileContent} csvHeader={csvHeader} csvStartLine={csvStartLine} base={base} query={query} current={current} />;
   return <div className="unsupported"><div className="memory-basin"><Image src="/images/pensieve-basin.png" width={768} height={512} sizes="(max-width: 800px) 80vw, 430px" alt="An enchanted stone memory basin filled with silver light" priority unoptimized /></div><h2>The memory resists this chamber.</h2><p>This artifact requires {file.tool} to inspect.</p></div>;
 }
 
