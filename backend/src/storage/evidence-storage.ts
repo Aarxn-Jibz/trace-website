@@ -39,22 +39,14 @@ const CASE_ROOTS = new Map<string, string>([
 const manifests = new Map<string, Promise<StoredEvidenceFile[]>>();
 
 function viewerType(name: string): EvidenceViewerType {
-<<<<<<< Updated upstream
-  if (name === ".bash_profile") return "text";
-=======
   if (name === ".bash_profile" || name === ".bashrc" || name === ".zshrc") return "text";
->>>>>>> Stashed changes
   switch (path.extname(name).toLowerCase()) {
     case ".pcap": return "pcap";
     case ".md": return "markdown";
     case ".csv": return "csv";
     case ".json": return "json";
-<<<<<<< Updated upstream
-    case ".log": return "text";
-=======
     case ".log":
     case ".txt":
->>>>>>> Stashed changes
     case ".pem": return "text";
     case ".png":
     case ".jpg":

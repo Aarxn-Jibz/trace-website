@@ -4,7 +4,7 @@ import Link from "next/link";
 import * as React from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowDown, ArrowUpRight, LockKeyhole } from "lucide-react";
-import { CASES, isCaseReleased } from "@/data/trace";
+import { CASES } from "@/data/trace";
 import { shouldUseCaseTransition, useCaseTransition } from "@/components/transitions/case-transition-provider";
 
 const STEPS = [
@@ -118,23 +118,14 @@ function TraceJourney() {
   );
 }
 
-function useReleaseClock() {
-  const [now, setNow] = React.useState(() => Date.now());
-  React.useEffect(() => {
-    const timer = window.setInterval(() => setNow(Date.now()), 1_000);
-    return () => window.clearInterval(timer);
-  }, []);
-  return now;
-}
-
-function Cases({ now }: { now: number }) {
+function Cases() {
   const { startCaseOneTransition } = useCaseTransition();
   return (
     <section id="cases" className="case-arrival">
       <header className="case-arrival-head"><p>Three investigations</p><h2>The traces are waiting.</h2></header>
       <div className="dossier-stage">
         {CASES.map((item, index) => {
-          const released = isCaseReleased(item, now);
+          const released = item.status === "released";
           const body = (
             <motion.article className={`dossier dossier-${index + 1} ${released ? "dossier-open" : "dossier-locked"}`} whileHover={released ? { y: -10, rotate: -0.35 } : undefined} transition={{ type: "spring", stiffness: 220, damping: 22 }}>
               <div className="dossier-edge" /><span className="dossier-number">{item.number}</span>
@@ -155,18 +146,16 @@ function Cases({ now }: { now: number }) {
 
 export function HomeExperience() {
   const { startCaseOneTransition } = useCaseTransition();
-  const now = useReleaseClock();
-  const caseOneReleased = isCaseReleased(CASES[0], now);
   return (
     <main className="home-shell">
       <header className="site-mark"><Link href="/">TRACE</Link><a href="#cases">CASES <span>↘</span></a></header>
       <TraceJourney />
-      <Cases now={now} />
-      <footer className="home-footer"><span>TRACK · RETRIEVE · ANALYZE · CORRELATE · EXAMINE</span>{caseOneReleased ? <Link href="/case/1" onClick={(event) => {
+      <Cases />
+      <footer className="home-footer"><span>TRACK · RETRIEVE · ANALYZE · CORRELATE · EXAMINE</span><Link href="/case/1" onClick={(event) => {
         if (!shouldUseCaseTransition(event)) return;
         event.preventDefault();
         startCaseOneTransition();
-      }}>BEGIN CASE 01 →</Link> : <span>CASE 01 SEALED</span>}</footer>
+      }}>BEGIN CASE 01 →</Link></footer>
     </main>
   );
 }
