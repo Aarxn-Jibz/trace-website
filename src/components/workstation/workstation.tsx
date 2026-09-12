@@ -9,6 +9,7 @@ import remarkGfm from "remark-gfm";
 import type { EvidenceFile } from "@/data/trace";
 import { ProtectedViewer } from "@/components/case/protected-viewer";
 import { WebSharkWorkstation } from "@/components/webshark/webshark-workstation";
+import { appPath } from "@/lib/base-path";
 
 type MatchPart = { text: string; match: boolean; matchIndex?: number };
 type SearchBeam = { id: number; x1: number; y1: number; x2: number; y2: number };
@@ -103,13 +104,13 @@ function FileViewer({ caseId, file, lines, csvHeader, page, pageSize, base, quer
   if (file.type === "image") return (
     <div className="image-viewer">
       {/* eslint-disable-next-line @next/next/no-img-element -- evidence is served by a protected runtime endpoint. */}
-      <img src={`/api/evidence/${caseId}/${file.id}/image`} alt={file.name} />
+      <img src={appPath(`/api/evidence/${caseId}/${file.id}/image`)} alt={file.name} />
     </div>
   );
   if (file.type === "pcap") return <div className="unsupported"><h2>This capture opens in WebShark.</h2><p>Select it again to begin packet analysis.</p></div>;
   const csvStartLine = page === 1 ? 1 : (page - 1) * pageSize;
   if (file.type !== "unsupported") return <RichTextViewer file={file} fileContent={fileContent} csvHeader={csvHeader} csvStartLine={csvStartLine} base={base} query={query} current={current} />;
-  return <div className="unsupported"><div className="memory-basin"><Image src="/images/pensieve-basin.png" width={768} height={512} sizes="(max-width: 800px) 80vw, 430px" alt="An enchanted stone memory basin filled with silver light" priority unoptimized /></div><h2>The memory resists this chamber.</h2><p>This artifact requires {file.tool} to inspect.</p></div>;
+  return <div className="unsupported"><div className="memory-basin"><Image src={appPath("/images/pensieve-basin.png")} width={768} height={512} sizes="(max-width: 800px) 80vw, 430px" alt="An enchanted stone memory basin filled with silver light" priority unoptimized /></div><h2>The memory resists this chamber.</h2><p>This artifact requires {file.tool} to inspect.</p></div>;
 }
 
 export function Workstation({ caseId, files, onClose }: { caseId: string; files: EvidenceFile[]; onClose: () => void }) {
@@ -196,7 +197,7 @@ export function Workstation({ caseId, files, onClose }: { caseId: string; files:
       params.set("q", query);
       if (jumpNext) params.set("jump", "1");
     }
-    fetch(`/api/evidence/${caseId}/${file.id}?${params.toString()}`)
+    fetch(appPath(`/api/evidence/${caseId}/${file.id}?${params.toString()}`))
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();

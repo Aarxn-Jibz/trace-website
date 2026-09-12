@@ -8,6 +8,7 @@ import type { EvidenceFile, TraceCase } from "@/data/trace";
 import { Button } from "@/components/ui/button";
 import { CyberChefWorkstation } from "@/components/cyberchef/cyberchef-workstation";
 import { Workstation } from "@/components/workstation/workstation";
+import { appPath } from "@/lib/base-path";
 
 export function CaseExperience({ traceCase }: { traceCase: TraceCase }) {
   const [workstationOpen, setWorkstationOpen] = React.useState(false);
@@ -24,7 +25,7 @@ export function CaseExperience({ traceCase }: { traceCase: TraceCase }) {
 
     const controller = new AbortController();
     setEvidenceStatus("loading");
-    fetch(`/api/cases/${traceCase.id}/evidence`, { signal: controller.signal })
+    fetch(appPath(`/api/cases/${traceCase.id}/evidence`), { signal: controller.signal })
       .then(async (response) => {
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         return response.json() as Promise<{ evidence?: EvidenceFile[] }>;

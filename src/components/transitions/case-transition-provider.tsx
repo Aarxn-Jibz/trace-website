@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
+import { appPath } from "@/lib/base-path";
 import * as React from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import styles from "./case-transition.module.css";
@@ -53,7 +54,7 @@ export function CaseTransitionProvider({ children }: { children: React.ReactNode
   const prepareOwl = React.useCallback(() => {
     if (!owlReady.current) {
       const owl = new window.Image();
-      owl.src = "/images/case-owl.webp";
+      owl.src = appPath("/images/case-owl.webp");
       owlReady.current = owl.decode().catch(() => undefined);
     }
     return owlReady.current;
@@ -164,7 +165,7 @@ export function CaseTransitionProvider({ children }: { children: React.ReactNode
                   ? { duration: 0.78, ease: [0.36, 0, 0.72, 1] }
                   : { duration: 0.12 }}
               >
-                <Image className={styles.owlImage} src="/images/case-owl.webp" alt="" width={1197} height={800} priority unoptimized draggable={false} />
+                <Image className={styles.owlImage} src={appPath("/images/case-owl.webp")} alt="" width={1197} height={800} priority unoptimized draggable={false} />
               </motion.div>
 
               <motion.div
