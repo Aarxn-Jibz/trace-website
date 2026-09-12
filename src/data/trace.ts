@@ -22,12 +22,18 @@ export interface TraceCase {
   evidence: EvidenceFile[];
 }
 
-export const CASES: TraceCase[] = [
-  // Each released case streams its evidence manifest from its source folder
-  // on the server (CASE_01_Beginner, CASE_02_Medium, CASE_03_Hard).
-  { id: "1", number: "01", status: "released", evidence: [] },
-  { id: "2", number: "02", status: "released", evidence: [] },
-  { id: "3", number: "03", status: "released", evidence: [] },
-];
+const CASE_RELEASES = [
+  // Times are expressed in UTC: 11:00, 12:00, and 14:00 IST on 15 Sep 2026.
+  { id: "1", number: "01", releaseAt: "2026-09-15T05:30:00.000Z" },
+  { id: "2", number: "02", releaseAt: "2026-09-15T06:30:00.000Z" },
+  { id: "3", number: "03", releaseAt: "2026-09-15T08:30:00.000Z" },
+] as const;
 
-export const getCase = (id: string) => CASES.find((item) => item.id === id);
+export const getCases = (): TraceCase[] => CASE_RELEASES.map((traceCase) => ({
+  id: traceCase.id,
+  number: traceCase.number,
+  status: Date.now() >= Date.parse(traceCase.releaseAt) ? "released" : "locked",
+  evidence: [],
+}));
+
+export const getCase = (id: string) => getCases().find((item) => item.id === id);

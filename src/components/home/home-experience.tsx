@@ -4,7 +4,7 @@ import Link from "next/link";
 import * as React from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowDown, ArrowUpRight, LockKeyhole } from "lucide-react";
-import { CASES } from "@/data/trace";
+import { getCases } from "@/data/trace";
 import { shouldUseCaseTransition, useCaseTransition } from "@/components/transitions/case-transition-provider";
 
 const STEPS = [
@@ -120,11 +120,12 @@ function TraceJourney() {
 
 function Cases() {
   const { startCaseOneTransition } = useCaseTransition();
+  const cases = getCases();
   return (
     <section id="cases" className="case-arrival">
       <header className="case-arrival-head"><p>Three investigations</p><h2>The traces are waiting.</h2></header>
       <div className="dossier-stage">
-        {CASES.map((item, index) => {
+        {cases.map((item, index) => {
           const released = item.status === "released";
           const body = (
             <motion.article className={`dossier dossier-${index + 1} ${released ? "dossier-open" : "dossier-locked"}`} whileHover={released ? { y: -10, rotate: -0.35 } : undefined} transition={{ type: "spring", stiffness: 220, damping: 22 }}>
