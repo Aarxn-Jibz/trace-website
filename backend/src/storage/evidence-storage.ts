@@ -182,6 +182,8 @@ export interface EvidencePage {
   pageSize: number;
   totalPages: number;
   lines: string[];
+  /** CSV column names, repeated separately for every page. */
+  csvHeader?: string;
 }
 
 /**
@@ -197,6 +199,8 @@ export async function readEvidencePage(
   page: number,
 ): Promise<EvidencePage> {
   const pageSize = EVIDENCE_LINES_PER_PAGE;
+  const file = (await getStoredEvidenceManifest(caseId))?.find((candidate) => candidate.id === fileId);
+  const isCsv = file?.type === "csv";
 
   const totalLines = await getEvidenceLineCount(caseId, fileId);
   const totalPages = Math.max(1, Math.ceil(totalLines / pageSize));
@@ -212,7 +216,16 @@ export async function readEvidencePage(
     try {
       const lines = JSON.parse(cached) as string[];
       if (Array.isArray(lines)) {
-        return { page, pageSize, totalPages, lines };
+        const csvHeader = isCsv ? await readEvidenceLines(caseId, fileId, 1, 1) : undefined;
+        return {
+          page,
+          pageSize,
+          totalPages,
+          // The first stored CSV page includes the source header. It is sent
+          // separately so every page can render it exactly once.
+          lines: isCsv && page === 1 ? lines.slice(1) : lines,
+          ...(csvHeader !== undefined ? { csvHeader } : {}),
+        };
       }
     } catch {
       // fall through and rebuild from source
@@ -227,7 +240,14 @@ export async function readEvidencePage(
 
   await cacheSet(key, JSON.stringify(lines));
 
-  return { page, pageSize, totalPages, lines };
+  const csvHeader = isCsv ? await readEvidenceLines(caseId, fileId, 1, 1) : undefined;
+  return {
+    page,
+    pageSize,
+    totalPages,
+    lines: isCsv && page === 1 ? lines.slice(1) : lines,
+    ...(csvHeader !== undefined ? { csvHeader } : {}),
+  };
 }
 
 /**
