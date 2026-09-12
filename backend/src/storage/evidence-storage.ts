@@ -21,6 +21,8 @@ export interface EvidenceFileMetadata {
   type: EvidenceViewerType;
   size: string;
   tool?: string;
+  /** Parent directory name relative to the case root; root files have none. */
+  folder?: string;
   webSharkCaptureName?: string;
 }
 
@@ -29,19 +31,30 @@ interface StoredEvidenceFile extends EvidenceFileMetadata {
 }
 
 const CASE_ROOTS = new Map<string, string>([
-  ["1", path.resolve(process.cwd(), process.env.EVIDENCE_ROOT || "CASE_05_SILENT_BEACON")],
+  ["1", path.resolve(process.cwd(), process.env.CASE_01_ROOT || "CASE_01_Beginner")],
+  ["2", path.resolve(process.cwd(), process.env.CASE_02_ROOT || "CASE_02_Medium")],
+  ["3", path.resolve(process.cwd(), process.env.CASE_03_ROOT || "CASE_03_Hard")],
 ]);
 
 const manifests = new Map<string, Promise<StoredEvidenceFile[]>>();
 
 function viewerType(name: string): EvidenceViewerType {
+<<<<<<< Updated upstream
   if (name === ".bash_profile") return "text";
+=======
+  if (name === ".bash_profile" || name === ".bashrc" || name === ".zshrc") return "text";
+>>>>>>> Stashed changes
   switch (path.extname(name).toLowerCase()) {
     case ".pcap": return "pcap";
     case ".md": return "markdown";
     case ".csv": return "csv";
     case ".json": return "json";
+<<<<<<< Updated upstream
     case ".log": return "text";
+=======
+    case ".log":
+    case ".txt":
+>>>>>>> Stashed changes
     case ".pem": return "text";
     case ".png":
     case ".jpg":
@@ -70,6 +83,7 @@ async function filesBelow(directory: string, root: string): Promise<StoredEviden
     if (!entry.isFile()) return [];
 
     const relativePath = path.relative(root, fullPath);
+    const dirName = path.dirname(relativePath);
     const type = viewerType(entry.name);
     const info = await fs.stat(fullPath);
     return [{
@@ -79,6 +93,7 @@ async function filesBelow(directory: string, root: string): Promise<StoredEviden
       type,
       size: formatSize(info.size),
       relativePath,
+      ...(dirName !== "." ? { folder: dirName.replaceAll(path.sep, "/") } : {}),
       ...(type === "pcap"
         ? { tool: "Wireshark", webSharkCaptureName: entry.name }
         : {}),
@@ -110,6 +125,7 @@ export async function getEvidenceManifest(caseId: string): Promise<EvidenceFileM
     path: file.relativePath,
     type: file.type,
     size: file.size,
+    ...(file.folder ? { folder: file.folder } : {}),
     ...(file.tool ? { tool: file.tool } : {}),
     ...(file.webSharkCaptureName
       ? { webSharkCaptureName: file.webSharkCaptureName }

@@ -10,3 +10,4 @@ services:
       SHARKD_SOCKET: /tmp/sharkd.sock
     volumes:
       - ./CASE_05_SILENT_BEACON/artifacts:/captures:ro
+      - ./CASE_02_Medium/artifacts:/captures/case02:ro

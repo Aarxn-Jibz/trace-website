@@ -1,0 +1,187 @@
+========================================================================
+PART 1: INTERNAL AUDIT EMAIL CHAIN
+========================================================================
+
+Source File: internal_audit_email.eml
+Date Range:  2025-08-03 to 2025-08-18
+
+Parties:
+  - Arthur Weasley       <aweasley@stmungos-internal.local>   (Audit)
+  - Penelope Clearwater <pclearwater@stmungos-internal.local>(Vendor Mgmt)
+  - Lucius Malfoy       <lmalfoy@stmungos-internal.local>    (Senior Mgmt)
+  - Walburga Black      <wblack@stmungos-internal.local>     (Transplant Surgeon)
+  - Bertha Jorkins      <bjorkins@stmungos-internal.local>   (Assistant)
+  - Vendor Management   <vendor-mgmt@stmungos-internal.local>
+
+
+------------------------------------------------------------------------
+EMAIL 1 
+------------------------------------------------------------------------
+
+From:    aweasley@stmungos-internal.local
+To:      pclearwater@stmungos-internal.local
+Cc:      vendor-mgmt@stmungos-internal.local
+Subject: Orion Freight & Cargo carrier discrepancy - COMP-2025-1187
+Date:    Sun, 03 Aug 2025 09:14:02 -0400
+
+Hi Penelope,
+
+Filed COMP-2025-1187 this morning after finishing the Q2 cold-chain
+reconciliation. Wanted to flag it to you directly since it touches
+active transplant cases and I know ticket queues can sit for a while.
+
+Four transplant shipments this quarter are billed and
+logged under Hermes Logistics, but the GPS/telemetry data
+on those same shipments shows Orion Freight & Cargo physically
+handling the transport instead.
+
+Route timing and temperature-log handoff points line up with
+Orion Freight & Cargo, not Hermes.
+
+I don't know if Orion Freight & Cargo is an approved subcontractor for organ
+transport. If not, we have a chain-of-custody gap on live transplant
+organs, and I'd rather someone with the full picture take a look before
+I assume it's just a billing mix-up.
+
+Happy to walk through the spreadsheet with you or Vendor Management
+whenever works.
+
+Thanks,
+Arthur
+
+
+------------------------------------------------------------------------
+EMAIL 2 
+------------------------------------------------------------------------
+
+From:    pclearwater@stmungos-internal.local
+To:      lmalfoy@stmungos-internal.local
+Subject: RE: Orion Freight & Cargo carrier discrepancy - COMP-2025-1187
+Date:    Fri, 15 Aug 2025 16:42:11 -0400
+
+Lucius,
+
+Following up on the ticket Arthur filed.
+
+I spoke with our contact at Orion Freight & Cargo. They're attributing the
+carrier mismatch to a "reporting sync issue" on their internal
+dispatch systems. Apparently shipments are sometimes re-routed
+through their cross-dock facility before reaching us.
+
+They've assured me this doesn't affect cold-chain integrity, only
+the paperwork.
+
+I'm not entirely comfortable closing this yet. I checked the four
+flagged shipments against the reconciliation records and the same
+Orion Freight & Cargo routing pattern appears across all four.
+
+Given that these are transplant shipments, I'd rather confirm with you
+before I take any further action.
+
+Can you advise how you'd like me to proceed?
+
+Penelope
+
+
+------------------------------------------------------------------------
+EMAIL 3 
+------------------------------------------------------------------------
+
+From:    lmalfoy@stmungos-internal.local
+To:      pclearwater@stmungos-internal.local
+Subject: RE: Orion Freight & Cargo carrier discrepancy - COMP-2025-1187
+Date:    Fri, 15 Aug 2025 17:03:55 -0400
+
+Penelope,
+
+Close it.
+
+You've done what was required by confirming the vendor's explanation.
+There is no reason to turn a reporting discrepancy into a wider review
+of transplant operations.
+
+Do not contact the transplant unit for additional documentation.
+There is no need to create another trail around these shipments.
+
+If Arthur asks, keep the response limited to the logistics reporting
+issue and the vendor's explanation. Do not expand the scope into
+donor allocation or transplant chain-of-custody.
+
+I'll handle any questions that need to go beyond that.
+
+Lucius
+
+
+------------------------------------------------------------------------
+EMAIL 4 
+------------------------------------------------------------------------
+
+From:    pclearwater@stmungos-internal.local
+To:      aweasley@stmungos-internal.local
+Subject: RE: Orion Freight & Cargo carrier discrepancy - COMP-2025-1187
+Date:    Mon, 18 Aug 2025 10:05:44 -0400
+
+Hi Arthur,
+
+Thanks for flagging this and for the detail in the original ticket.
+
+We followed up with Orion Freight & Cargo directly - they're describing it as a
+reporting/dispatch synchronization issue tied to their cross-dock
+routing, not a custody break. We're closing COMP-2025-1187 as
+no-action.
+
+Appreciate you keeping an eye on the reconciliation reports. Let us know
+if you see the pattern again on future shipments.
+
+Penelope
+
+
+------------------------------------------------------------------------
+EMAIL 5 -- TRANSPLANT COMMITTEE MEETING SUMMARY
+------------------------------------------------------------------------
+
+From:    bjorkins@stmungos-internal.local
+To:      wblack@stmungos-internal.local
+Subject: Summary of Transplant Committee Meeting
+Date:    Wed, 08 Oct 2025 12:04:17 -0400
+
+Hi Dr. Walburga Black,
+
+Following today's committee meeting, here is a summary of the
+discussion concerning COMP-2025-1187.
+
+The committee reviewed four transplant cases. Cross-checking
+allocation records, transport telemetry, custody documentation, and
+procedure records showed the same unresolved carrier discrepancy:
+Hermes Logistics appears on the paperwork, while telemetry
+indicates Orion Freight & Cargo.
+
+An unexplained custody gap was also identified between dispatch and
+delivery.
+
+You noted that the donor-allocation status for Sirius Black did not
+appear to match the transplant that was ultimately performed at
+St Mungo’s. The committee therefore recommended an immediate audit of
+the chain-of-custody and donor-allocation records.
+
+You also recused yourself from the audit vote because the Black case
+was performed under your service. The recusal was recorded in the
+meeting notes.
+
+The committee noted that Orion Freight & Cargo had previously been used in
+transplant logistics coordinated through your unit. No further vendor
+documentation was requested during the meeting.
+
+Unit-level communication will remain on hold pending Compliance/Legal
+review.
+
+Action items:
+
+1. Transplant Coordination to complete the four-case reconciliation
+   by 22 Oct 2025.
+2. Compliance / Legal to conduct the chain-of-custody audit.
+3. Hold unit communication pending Legal review.
+
+The review remains suspended pending Legal and Executive direction.
+
+- Bertha 

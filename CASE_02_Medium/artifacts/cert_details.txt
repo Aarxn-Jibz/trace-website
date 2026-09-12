@@ -1,0 +1,17 @@
+================================================================================
+INTERCEPTED TLS CERTIFICATE FORENSIC INSPECTION - API.APEXLEDGER.EXAMPLE
+================================================================================
+Subject: CN = api.apexledger.example, O = Apex Fake Proxy, C = US
+Issuer: CN = Apex-Fake-Root-CA, O = Adversary MitM Corp, C = US
+Serial Number: BAD99182234182299882
+Validity:
+    Not Before: Aug 15 00:00:00 2026 GMT
+    Not After : Aug 15 00:00:00 2027 GMT
+Subject Public Key Info:
+    Public Key Algorithm: rsaEncryption (2048 bit)
+X509v3 Subject Alternative Name:
+    DNS:api.apexledger.example
+Fingerprint (SHA-256): 59:7F:10:DB:BB:3F:8B:10:C2:1B:2D:F3:D5:B3:1C:DC:D4:49:EF:E6:9A:89:80:67:65:CC:F2:8D:20:16:F4:04
+Fingerprint (SHA-1)  : 06:D9:34:CD:8F:1D:6D:E8:48:75:70:85:3D:1C:6F:DB:D2:46:61:8E
+Status: UNTRUSTED SELF-SIGNED / ROGUE CA MITM CERTIFICATE
+================================================================================

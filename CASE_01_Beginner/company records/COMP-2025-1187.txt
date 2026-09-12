@@ -1,0 +1,49 @@
+ST MUNGO’S — INTERNAL COMPLIANCE TICKET SYSTEM (EXPORT)
+====================================================================
+Ticket ID:        COMP-2025-1187
+Filed By:         Arthur Weasley (Logistics Dept., Employee ID SJH-EMP-1904,
+                   account: aweasley)
+Filed Date:       2025-08-03
+Category:         Vendor / Chain-of-Custody Discrepancy
+Priority:         Medium
+Status:           CLOSED - No Action by Vendor Mgt. and  
+
+--------------------------------------------------------------------
+DESCRIPTION (as submitted by employee):
+--------------------------------------------------------------------
+While reconciling Q2 cold-chain transport logs against our official
+carrier invoices, I noticed that several transplant organ shipment
+references show GPS/telemetry data that does not match the carrier
+listed on the corresponding paperwork. Every affected shipment is
+billed and logged under Hermes Logistics, but the actual
+route timing, temperature-log handoff points, and vehicle telemetry
+point to a different carrier — Orion Freight & Cargo — physically
+handling the transport instead.
+
+I've flagged 4 shipment references so far, all tied to active transplant cases. 
+
+I don't know if Orion Freight & Cargo is an authorized
+subcontractor for organ transport. If they aren't, that's a
+chain-of-custody gap on live transplant organs, not a billing
+typo. Requesting review by Compliance and Vendor Management, and
+confirmation of whether the chain of custody was broken for these
+shipments."
+
+Attached: internal spreadsheet (transplant_shipment_manifest.csv)
+
+--------------------------------------------------------------------
+RESOLUTION NOTES:
+--------------------------------------------------------------------
+2025-08-10 - Assigned to Vendor Management (P. Clearwater).
+2025-08-15 - Reviewed with Orion Freight & Cargo directly.
+             Orion Freight & Cargo described it as a "reporting synchronization
+             issue" on their dispatch software, occurring when
+             shipments are re-routed through a regional cross-dock
+             facility before reaching St Mungo’s. No independent
+             verification of chain-of-custody was performed.
+2025-08-19 - Ticket closed. Determined to be a data-entry / systems-
+             sync issue, not a chain-of-custody concern. No transplant
+             impact identified. No further action.
+
+Closed By: P. Clearwater, hospital  Vendor Management
+====================================================================

@@ -1,0 +1,32 @@
+ST MUNGO’S — HR TERMINATION RECORD (EXPORT)
+====================================================================
+Employee ID:           SJH-CTR-4471
+Name:                  Mulciber
+Account:               mulciber
+Termination Date:      2026-01-22
+Account Deprovisioned: NO - discovered still active during post-
+                       incident audit
+Deprovision Date:      2026-02-16
+
+Notes:
+Employee SJH-CTR-4471 (mulciber) was terminated following an
+internal identity-verification review. Employment credentials and
+supporting identity documentation could not be independently
+verified against the information provided at onboarding.
+
+The employee was unable to provide sufficient documentation to
+resolve discrepancies in the submitted identity records. As a
+result, the employee's identity could not be conclusively verified
+and the contract was terminated.
+
+Account mulciber remained enabled after termination and was only
+deprovisioned on 2026-02-16 during the post-incident audit.
+
+Active Directory logon history shows NO successful logons on this
+account between the termination date and deprovisioning.
+
+Two authentication attempts against this account were logged during
+the incident window (2026-02-14, 02:27-02:28) from an unknown IP address
+in Bucharest, Romania. Both attempts failed MFA. No successful login
+on this account is recorded at any point during the incident.
+====================================================================

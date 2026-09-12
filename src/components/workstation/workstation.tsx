@@ -3,7 +3,7 @@
 import * as React from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ChevronDown, ChevronUp, FileText, Search, X } from "lucide-react";
+import { ChevronDown, ChevronRight, ChevronUp, FileText, Search, X } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { EvidenceFile } from "@/data/trace";
@@ -129,6 +129,7 @@ export function Workstation({ caseId, files, onClose }: { caseId: string; files:
   const [fileFlash, setFileFlash] = React.useState<"green" | "red" | null>("green");
   const [beam, setBeam] = React.useState<SearchBeam | null>(null);
   const [pcapFile, setPcapFile] = React.useState<EvidenceFile | null>(null);
+  const [expandedFolders, setExpandedFolders] = React.useState<Set<string>>(new Set());
   const panelRef = React.useRef<HTMLElement>(null);
   const beamId = React.useRef(0);
   const pendingMatch = React.useRef<number | null>(null);
@@ -149,6 +150,33 @@ export function Workstation({ caseId, files, onClose }: { caseId: string; files:
     if (!searchMeta || searchMeta.perPage.length === 0) return 0;
     return searchMeta.perPage.slice(0, Math.max(0, page - 1)).reduce((sum, n) => sum + n, 0);
   }, [page, searchMeta]);
+
+  const grouped = React.useMemo(() => {
+    const folderMap = new Map<string, EvidenceFile[]>();
+    const root: EvidenceFile[] = [];
+    for (const item of files) {
+      if (item.folder) {
+        const group = folderMap.get(item.folder);
+        if (group) group.push(item);
+        else folderMap.set(item.folder, [item]);
+      } else {
+        root.push(item);
+      }
+    }
+    return {
+      root,
+      folders: [...folderMap.entries()].sort((left, right) => left[0].localeCompare(right[0])),
+    };
+  }, [files]);
+
+  function toggleFolder(folder: string) {
+    setExpandedFolders((previous) => {
+      const next = new Set(previous);
+      if (next.has(folder)) next.delete(folder);
+      else next.add(folder);
+      return next;
+    });
+  }
 
   React.useEffect(() => { if (fileFlash) { const timer = setTimeout(() => setFileFlash(null), 480); return () => clearTimeout(timer); } }, [fileFlash]);
   React.useEffect(() => {
@@ -294,7 +322,18 @@ export function Workstation({ caseId, files, onClose }: { caseId: string; files:
         <div className="parchment-edge parchment-top" /><div className="parchment-edge parchment-bottom" />
         <div className="workstation">
           <header className="workstation-top"><div><span>TRACE</span> FORENSICS</div><span className="current-file"><span className="current-file-name">{file?.name ?? "NO FILE OPEN"}</span>{searchable && <button className="header-find" onClick={() => setSearchOpen(true)}><kbd>CTRL/CMD + F</kbd><span>TO SEARCH</span></button>}</span><button onClick={closeWorkstation} aria-label="Exit workstation"><X /></button></header>
+<<<<<<< Updated upstream
           <aside className="file-sidebar"><p>EVIDENCE</p>{fileGroups.map(({ folder, items }) => <section className="file-group" key={folder || "root"}><h2>{folder ? folder.toUpperCase() : "CASE FILES"}</h2>{items.map((item) => <button className={item.id === file?.id ? "active" : ""} onClick={() => choose(item)} key={item.id}><FileText /><span>{item.name}</span><small>{item.size}</small></button>)}</section>)}</aside>
+=======
+          <aside className="file-sidebar"><p>EVIDENCE</p>{grouped.root.map((item) => <button className={item.id === file?.id ? "active" : ""} onClick={() => choose(item)} key={item.id}><FileText /><span>{item.name}</span><small>{item.size}</small></button>)}
+            {grouped.folders.map(([folder, items]) => {
+              const open = expandedFolders.has(folder);
+              return <div className="file-folder" key={folder}>
+                <button type="button" className={`folder-toggle ${open ? "open" : ""}`} aria-expanded={open} onClick={() => toggleFolder(folder)}>{open ? <ChevronDown /> : <ChevronRight />}<span>{folder}</span><small>{items.length}</small></button>
+                <AnimatePresence initial={false}>{open && <motion.div className="folder-items" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.22 }}>{items.map((item) => <button className={item.id === file?.id ? "active" : ""} onClick={() => choose(item)} key={item.id}><FileText /><span>{item.name}</span><small>{item.size}</small></button>)}</motion.div>}</AnimatePresence>
+              </div>;
+            })}</aside>
+>>>>>>> Stashed changes
           <section className="viewer-panel" ref={panelRef}>
             <div className="viewer-toolbar"><span>{file?.type.toUpperCase() ?? "VIEWER"}</span><div>{file && <button onClick={closeFile} className="close-file" aria-label="Close file"><X /></button>}</div></div>
             <AnimatePresence mode="wait">{file ? <motion.div key={file.id} className="viewer-content" initial={{ opacity: 0, clipPath: "inset(0 100% 0 0)" }} animate={{ opacity: 1, clipPath: "inset(0 0 0 0)" }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}><ProtectedViewer className="protected-viewer" maxLines={file.name.toLowerCase().endsWith(".pem") ? Infinity : 2}><FileViewer caseId={caseId} file={file} lines={lines} csvHeader={csvHeader} page={page} pageSize={pageSize} base={before} query={query} current={current} /></ProtectedViewer>{file.type !== "pcap" && file.type !== "unsupported" && file.type !== "image" && <div className="evidence-pager"><button onClick={() => gotoPage(page - 1)} disabled={page <= 1}>← PREVIOUS</button><span>PAGE {page} / {totalPages}</span><button onClick={() => gotoPage(page + 1)} disabled={page >= totalPages}>NEXT →</button></div>}</motion.div> : <motion.div key="empty" className="viewer-empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }}><FileText/><p>Select evidence to inspect</p></motion.div>}</AnimatePresence>

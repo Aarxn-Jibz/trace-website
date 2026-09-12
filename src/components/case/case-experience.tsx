@@ -71,10 +71,10 @@ export function CaseExperience({ traceCase }: { traceCase: TraceCase }) {
         <section className="desktop-space" aria-labelledby="desktop-title">
           <div className="desktop-copy"><p>CASE <span className="case-number">{traceCase.number}</span></p><h1 id="desktop-title">The evidence is waiting.</h1><span>{evidenceSummary}</span></div>
           <div className="desktop-icons">
-            <button className="desktop-icon" disabled={evidenceStatus !== "ready"} onDoubleClick={() => setWorkstationOpen(true)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") setWorkstationOpen(true); }} onClick={(event) => event.currentTarget.focus()} aria-label="Files. Double click to open"><FileText /><strong>FILES</strong><span>{evidenceStatus === "ready" ? `${files.length} EVIDENCE ITEMS` : evidenceStatus.toUpperCase()}</span></button>
+            <button className="desktop-icon" disabled={evidenceStatus !== "ready"} onClick={() => setWorkstationOpen(true)} aria-label="Files. Click to open"><FileText /><strong>FILES</strong><span>{evidenceStatus === "ready" ? `${files.length} EVIDENCE ITEMS` : evidenceStatus.toUpperCase()}</span></button>
             <button className="desktop-icon" onClick={() => setCyberChefOpen(true)} aria-label="Open CyberChef"><FlaskConical /><strong>CYBERCHEF</strong><span>ANALYSIS LAB</span></button>
           </div>
-          <p className="desktop-hint">DOUBLE-CLICK FILES TO INSPECT EVIDENCE</p>
+          <p className="desktop-hint">CLICK FILES TO INSPECT EVIDENCE</p>
         </section>
       </>}
       <AnimatePresence>
