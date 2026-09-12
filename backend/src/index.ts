@@ -4,6 +4,7 @@ import {
   EvidencePageOutOfRangeError,
   getEvidenceManifest,
   getSearchStats,
+  readEvidenceBinary,
   readEvidencePage,
 } from "./storage/evidence-storage";
 
@@ -23,6 +24,36 @@ app.get("/api/cases/:caseId/evidence", async (c) => {
   } catch (err) {
     console.error("[trace-api] failed to build evidence manifest:", err);
     return c.json({ error: "Evidence unavailable" }, 500);
+  }
+});
+
+const imageMimeTypes: Record<string, string> = {
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".webp": "image/webp",
+  ".gif": "image/gif",
+};
+
+app.get("/api/evidence/:caseId/:fileId/image", async (c) => {
+  const caseId = c.req.param("caseId");
+  const fileId = c.req.param("fileId");
+  try {
+    const evidence = await getEvidenceManifest(caseId);
+    const file = evidence?.find((candidate) => candidate.id === fileId);
+    if (!file || file.type !== "image") return c.json({ error: "Image not found" }, 404);
+    const extension = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
+    const source = await readEvidenceBinary(caseId, fileId);
+    const image = new Uint8Array(source.byteLength);
+    image.set(source);
+    return c.body(image, 200, {
+      "Cache-Control": "private, no-store",
+      "Content-Disposition": "inline",
+      "Content-Type": imageMimeTypes[extension] ?? "application/octet-stream",
+    });
+  } catch (err) {
+    console.error(`[trace-api] failed to read image ${caseId}/${fileId}:`, err);
+    return c.json({ error: "Image unavailable" }, 500);
   }
 });
 

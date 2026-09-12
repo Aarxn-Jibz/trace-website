@@ -97,9 +97,10 @@ function RichTextViewer({ file, fileContent, csvHeader, csvStartLine, base, quer
   return <div ref={rootRef}><StaticRichViewer file={file} fileContent={fileContent} csvHeader={csvHeader} csvStartLine={csvStartLine} /></div>;
 }
 
-function FileViewer({ file, lines, csvHeader, page, pageSize, base, query, current }: { file: EvidenceFile; lines: string[]; csvHeader?: string; page: number; pageSize: number; base: number; query: string; current: number }) {
+function FileViewer({ caseId, file, lines, csvHeader, page, pageSize, base, query, current }: { caseId: string; file: EvidenceFile; lines: string[]; csvHeader?: string; page: number; pageSize: number; base: number; query: string; current: number }) {
   const fileContent = lines.join("\n");
   if (file.type === "text") return <TextViewer lines={lines} page={page} pageSize={pageSize} base={base} query={query} current={current} />;
+  if (file.type === "image") return <div className="image-viewer">{/* eslint-disable-next-line @next/next/no-img-element -- evidence is served by a protected runtime endpoint. */}<img src={`/api/evidence/${caseId}/${file.id}/image`} alt={file.name} /></div>;
   if (file.type === "pcap") return <div className="unsupported"><h2>This capture opens in WebShark.</h2><p>Select it again to begin packet analysis.</p></div>;
   const csvStartLine = page === 1 ? 1 : (page - 1) * pageSize;
   if (file.type !== "unsupported") return <RichTextViewer file={file} fileContent={fileContent} csvHeader={csvHeader} csvStartLine={csvStartLine} base={base} query={query} current={current} />;
@@ -127,7 +128,7 @@ export function Workstation({ caseId, files, onClose }: { caseId: string; files:
   const beamId = React.useRef(0);
   const pendingMatch = React.useRef<number | null>(null);
   const reduce = useReducedMotion();
-  const searchable = Boolean(file && file.type !== "unsupported" && file.type !== "pcap");
+  const searchable = Boolean(file && file.type !== "unsupported" && file.type !== "pcap" && file.type !== "image");
   const count = searchMeta?.total ?? 0;
   const before = React.useMemo(() => {
     if (!searchMeta || searchMeta.perPage.length === 0) return 0;
@@ -152,7 +153,7 @@ export function Workstation({ caseId, files, onClose }: { caseId: string; files:
   }, [queryInput]);
 
   React.useEffect(() => {
-    if (!file || file.type === "pcap" || file.type === "unsupported") {
+    if (!file || file.type === "pcap" || file.type === "unsupported" || file.type === "image") {
       setLines([]); setPage(1); setTotalPages(1); setCsvHeader(undefined); setSearchMeta(null);
       return;
     }
@@ -281,7 +282,7 @@ export function Workstation({ caseId, files, onClose }: { caseId: string; files:
           <aside className="file-sidebar"><p>EVIDENCE</p>{files.map((item) => <button className={item.id === file?.id ? "active" : ""} onClick={() => choose(item)} key={item.id}><FileText /><span>{item.name}</span><small>{item.size}</small></button>)}</aside>
           <section className="viewer-panel" ref={panelRef}>
             <div className="viewer-toolbar"><span>{file?.type.toUpperCase() ?? "VIEWER"}</span><div>{file && <button onClick={closeFile} className="close-file" aria-label="Close file"><X /></button>}</div></div>
-            <AnimatePresence mode="wait">{file ? <motion.div key={file.id} className="viewer-content" initial={{ opacity: 0, clipPath: "inset(0 100% 0 0)" }} animate={{ opacity: 1, clipPath: "inset(0 0 0 0)" }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}><ProtectedViewer className="protected-viewer"><FileViewer file={file} lines={lines} csvHeader={csvHeader} page={page} pageSize={pageSize} base={before} query={query} current={current} /></ProtectedViewer>{file.type !== "pcap" && file.type !== "unsupported" && <div className="evidence-pager"><button onClick={() => gotoPage(page - 1)} disabled={page <= 1}>← PREVIOUS</button><span>PAGE {page} / {totalPages}</span><button onClick={() => gotoPage(page + 1)} disabled={page >= totalPages}>NEXT →</button></div>}</motion.div> : <motion.div key="empty" className="viewer-empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }}><FileText/><p>Select evidence to inspect</p></motion.div>}</AnimatePresence>
+            <AnimatePresence mode="wait">{file ? <motion.div key={file.id} className="viewer-content" initial={{ opacity: 0, clipPath: "inset(0 100% 0 0)" }} animate={{ opacity: 1, clipPath: "inset(0 0 0 0)" }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}><ProtectedViewer className="protected-viewer"><FileViewer caseId={caseId} file={file} lines={lines} csvHeader={csvHeader} page={page} pageSize={pageSize} base={before} query={query} current={current} /></ProtectedViewer>{file.type !== "pcap" && file.type !== "unsupported" && file.type !== "image" && <div className="evidence-pager"><button onClick={() => gotoPage(page - 1)} disabled={page <= 1}>← PREVIOUS</button><span>PAGE {page} / {totalPages}</span><button onClick={() => gotoPage(page + 1)} disabled={page >= totalPages}>NEXT →</button></div>}</motion.div> : <motion.div key="empty" className="viewer-empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }}><FileText/><p>Select evidence to inspect</p></motion.div>}</AnimatePresence>
             <AnimatePresence>{searchOpen && searchable && <motion.div className="search-box" initial={{ x: 24, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 10, opacity: 0 }}><Search /><input autoFocus value={queryInput} onChange={(event) => { setQueryInput(event.target.value); }} placeholder="Find in evidence" aria-label="Find in evidence"/><span>{query ? `${count ? current + 1 : 0} / ${count}` : "0 / 0"}</span><button onClick={() => navigate(-1)} aria-label="Previous result"><ChevronUp /></button><button onClick={() => navigate(1)} aria-label="Next result"><ChevronDown /></button><button onClick={() => setSearchOpen(false)} aria-label="Close search"><X /></button>{query && <i className={count ? "search-magic" : "search-miss"} key={`${query}-${current}`} />}</motion.div>}</AnimatePresence>
             <AnimatePresence>{beam && <motion.svg key={beam.id} className="search-flight" viewBox={`0 0 ${Math.max(1, panelRef.current?.clientWidth ?? 1)} ${Math.max(1, panelRef.current?.clientHeight ?? 1)}`} preserveAspectRatio="none" initial={{ opacity: 1 }} exit={{ opacity: 0 }}><defs><filter id="blue-glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><motion.path d={`M ${beam.x1} ${beam.y1} C ${beam.x1 - 90} ${beam.y1 + 34}, ${beam.x2 + 90} ${beam.y2 - 34}, ${beam.x2} ${beam.y2}`} pathLength="1" fill="none" stroke="url(#search-gradient)" strokeWidth="3" strokeDasharray=".14 .86" filter="url(#blue-glow)" initial={{ strokeDashoffset: 1, opacity: 0 }} animate={{ strokeDashoffset: 0, opacity: [0, 1, 1, 0] }} transition={{ duration: .58, times: [0,.12,.82,1], ease: "easeOut" }}/><motion.circle cx={beam.x2} cy={beam.y2} r="9" fill="none" stroke="#aee3ff" strokeWidth="2" initial={{ scale: .2, opacity: 0 }} animate={{ scale: [0.2, 1.5], opacity: [0, .9, 0] }} transition={{ duration: .32, delay: .38 }}/><linearGradient id="search-gradient"><stop stopColor="#f4fbff"/><stop offset=".45" stopColor="#78bde9"/><stop offset="1" stopColor="#3277a8"/></linearGradient></motion.svg>}</AnimatePresence>
             {fileFlash && <motion.div className={`file-magic ${fileFlash}`} initial={{ scaleX: 0, opacity: 1 }} animate={{ scaleX: 1, opacity: 0 }} transition={{ duration: 0.45 }} />}

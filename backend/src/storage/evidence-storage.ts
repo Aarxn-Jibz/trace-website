@@ -12,7 +12,7 @@ import {
 /** Fixed number of evidence lines rendered per page. */
 export const EVIDENCE_LINES_PER_PAGE = 200;
 
-export type EvidenceViewerType = "text" | "markdown" | "csv" | "json" | "pcap" | "unsupported";
+export type EvidenceViewerType = "text" | "markdown" | "csv" | "json" | "image" | "pcap" | "unsupported";
 
 export interface EvidenceFileMetadata {
   id: string;
@@ -40,6 +40,11 @@ function viewerType(name: string): EvidenceViewerType {
     case ".csv": return "csv";
     case ".json": return "json";
     case ".log": return "text";
+    case ".png":
+    case ".jpg":
+    case ".jpeg":
+    case ".webp":
+    case ".gif": return "image";
     default: return "unsupported";
   }
 }
@@ -137,6 +142,14 @@ export async function readEvidenceContent(
   fileId: string,
 ): Promise<string> {
   return fs.readFile(await resolveEvidencePath(caseId, fileId), "utf-8");
+}
+
+/** Read a binary evidence artifact for the dedicated image endpoint. */
+export async function readEvidenceBinary(
+  caseId: string,
+  fileId: string,
+): Promise<Buffer> {
+  return fs.readFile(await resolveEvidencePath(caseId, fileId));
 }
 
 /**

@@ -1,4 +1,4 @@
-export type ViewerType = "text" | "markdown" | "csv" | "json" | "pcap" | "unsupported";
+export type ViewerType = "text" | "markdown" | "csv" | "json" | "image" | "pcap" | "unsupported";
 export type ReleaseStatus = "released" | "locked";
 
 export interface EvidenceFile {

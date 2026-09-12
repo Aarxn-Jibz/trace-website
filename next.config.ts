@@ -14,6 +14,10 @@ const nextConfig: NextConfig = {
         source: "/api/evidence/:caseId/:fileId",
         destination: `${apiBase}/api/evidence/:caseId/:fileId`,
       },
+      {
+        source: "/api/evidence/:caseId/:fileId/image",
+        destination: `${apiBase}/api/evidence/:caseId/:fileId/image`,
+      },
     ];
   },
 };
