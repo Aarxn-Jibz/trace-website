@@ -3,6 +3,7 @@ node_modules
 out
 .DS_Store
 *.log
+!CASE_05_SILENT_BEACON/**/*.log
 .shots
 *.tsbuildinfo
 

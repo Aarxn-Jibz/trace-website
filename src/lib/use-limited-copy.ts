@@ -35,6 +35,7 @@ export function useLimitedCopy<T extends HTMLElement>(maxLines: number) {
     if (!root) return;
 
     const onCopy = (event: ClipboardEvent) => {
+      if (!Number.isFinite(maxLinesRef.current)) return;
       if (isEditableTarget(event.target)) return;
       if (!event.clipboardData) return;
       const selection = window.getSelection();

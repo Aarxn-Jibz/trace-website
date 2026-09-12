@@ -35,12 +35,14 @@ const CASE_ROOTS = new Map<string, string>([
 const manifests = new Map<string, Promise<StoredEvidenceFile[]>>();
 
 function viewerType(name: string): EvidenceViewerType {
+  if (name === ".bash_profile") return "text";
   switch (path.extname(name).toLowerCase()) {
     case ".pcap": return "pcap";
     case ".md": return "markdown";
     case ".csv": return "csv";
     case ".json": return "json";
     case ".log": return "text";
+    case ".pem": return "text";
     case ".png":
     case ".jpg":
     case ".jpeg":
@@ -214,11 +216,15 @@ export async function readEvidencePage(
   fileId: string,
   page: number,
 ): Promise<EvidencePage> {
-  const pageSize = EVIDENCE_LINES_PER_PAGE;
   const file = (await getStoredEvidenceManifest(caseId))?.find((candidate) => candidate.id === fileId);
   const isCsv = file?.type === "csv";
 
   const totalLines = await getEvidenceLineCount(caseId, fileId);
+  // PEM files are deliberately exposed as one page so attendees can copy the
+  // complete certificate/key artifact when the exercise requires it.
+  const pageSize = file?.name.toLowerCase().endsWith(".pem")
+    ? Math.max(1, totalLines)
+    : EVIDENCE_LINES_PER_PAGE;
   const totalPages = Math.max(1, Math.ceil(totalLines / pageSize));
 
   if (!Number.isInteger(page) || page < 1 || page > totalPages) {
@@ -319,13 +325,17 @@ export async function getSearchStats(
   const content = await readEvidenceContent(caseId, fileId);
   const lines = content.length ? content.split("\n") : [];
 
-  const pageCount = Math.max(1, Math.ceil(lines.length / EVIDENCE_LINES_PER_PAGE));
+  const file = (await getStoredEvidenceManifest(caseId))?.find((candidate) => candidate.id === fileId);
+  const pageSize = file?.name.toLowerCase().endsWith(".pem")
+    ? Math.max(1, lines.length)
+    : EVIDENCE_LINES_PER_PAGE;
+  const pageCount = Math.max(1, Math.ceil(lines.length / pageSize));
   const perPage = new Array<number>(pageCount).fill(0);
 
   for (let i = 0; i < lines.length; i += 1) {
     const matches = countQueryMatches(lines[i], trimmed);
     if (matches > 0) {
-      perPage[Math.floor(i / EVIDENCE_LINES_PER_PAGE)] += matches;
+      perPage[Math.floor(i / pageSize)] += matches;
     }
   }
 
