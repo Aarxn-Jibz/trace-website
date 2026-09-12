@@ -100,7 +100,12 @@ function RichTextViewer({ file, fileContent, csvHeader, csvStartLine, base, quer
 function FileViewer({ caseId, file, lines, csvHeader, page, pageSize, base, query, current }: { caseId: string; file: EvidenceFile; lines: string[]; csvHeader?: string; page: number; pageSize: number; base: number; query: string; current: number }) {
   const fileContent = lines.join("\n");
   if (file.type === "text") return <TextViewer lines={lines} page={page} pageSize={pageSize} base={base} query={query} current={current} />;
-  if (file.type === "image") return <div className="image-viewer">{/* eslint-disable-next-line @next/next/no-img-element -- evidence is served by a protected runtime endpoint. */}<img src={`/api/evidence/${caseId}/${file.id}/image`} alt={file.name} /></div>;
+  if (file.type === "image") return (
+    <div className="image-viewer">
+      {/* eslint-disable-next-line @next/next/no-img-element -- evidence is served by a protected runtime endpoint. */}
+      <img src={`/api/evidence/${caseId}/${file.id}/image`} alt={file.name} />
+    </div>
+  );
   if (file.type === "pcap") return <div className="unsupported"><h2>This capture opens in WebShark.</h2><p>Select it again to begin packet analysis.</p></div>;
   const csvStartLine = page === 1 ? 1 : (page - 1) * pageSize;
   if (file.type !== "unsupported") return <RichTextViewer file={file} fileContent={fileContent} csvHeader={csvHeader} csvStartLine={csvStartLine} base={base} query={query} current={current} />;
