@@ -4,20 +4,26 @@ import Link from "next/link";
 import * as React from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowLeft, FileText, FlaskConical, LockKeyhole } from "lucide-react";
-import type { EvidenceFile, TraceCase } from "@/data/trace";
+import { isCaseReleased, type EvidenceFile, type TraceCase } from "@/data/trace";
 import { Button } from "@/components/ui/button";
 import { CyberChefWorkstation } from "@/components/cyberchef/cyberchef-workstation";
 import { Workstation } from "@/components/workstation/workstation";
 
 export function CaseExperience({ traceCase }: { traceCase: TraceCase }) {
+  const [now, setNow] = React.useState(() => Date.now());
   const [workstationOpen, setWorkstationOpen] = React.useState(false);
   const [cyberChefOpen, setCyberChefOpen] = React.useState(false);
   const [files, setFiles] = React.useState<EvidenceFile[]>([]);
   const [evidenceStatus, setEvidenceStatus] = React.useState<"loading" | "ready" | "error">(
-    traceCase.status === "released" ? "loading" : "ready",
+    isCaseReleased(traceCase, now) ? "loading" : "ready",
   );
   const reduce = useReducedMotion();
-  const locked = traceCase.status === "locked";
+  const locked = !isCaseReleased(traceCase, now);
+
+  React.useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 1_000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   React.useEffect(() => {
     if (locked) return;

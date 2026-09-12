@@ -9,6 +9,14 @@ import {
 } from "./storage/evidence-storage";
 
 const PORT = Number(process.env.API_PORT ?? 8787);
+const CASE_UNLOCKS: Record<string, string> = {
+  "1": "2026-09-12T11:40:00+05:30",
+};
+
+function isCaseReleased(caseId: string): boolean {
+  const unlockAt = CASE_UNLOCKS[caseId];
+  return !unlockAt || Date.now() >= Date.parse(unlockAt);
+}
 
 const app = new Hono();
 
@@ -17,6 +25,7 @@ app.get("/health", (c) =>
 );
 
 app.get("/api/cases/:caseId/evidence", async (c) => {
+  if (!isCaseReleased(c.req.param("caseId"))) return c.json({ error: "Case is sealed" }, 403);
   try {
     const evidence = await getEvidenceManifest(c.req.param("caseId"));
     if (!evidence) return c.json({ error: "Case not found" }, 404);
@@ -38,6 +47,7 @@ const imageMimeTypes: Record<string, string> = {
 app.get("/api/evidence/:caseId/:fileId/image", async (c) => {
   const caseId = c.req.param("caseId");
   const fileId = c.req.param("fileId");
+  if (!isCaseReleased(caseId)) return c.json({ error: "Case is sealed" }, 403);
   try {
     const evidence = await getEvidenceManifest(caseId);
     const file = evidence?.find((candidate) => candidate.id === fileId);
@@ -60,6 +70,7 @@ app.get("/api/evidence/:caseId/:fileId/image", async (c) => {
 app.get("/api/evidence/:caseId/:fileId", async (c) => {
   const caseId = c.req.param("caseId");
   const fileId = c.req.param("fileId");
+  if (!isCaseReleased(caseId)) return c.json({ error: "Case is sealed" }, 403);
 
   let evidence;
   try {

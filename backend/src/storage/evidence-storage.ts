@@ -17,6 +17,7 @@ export type EvidenceViewerType = "text" | "markdown" | "csv" | "json" | "image" 
 export interface EvidenceFileMetadata {
   id: string;
   name: string;
+  path: string;
   type: EvidenceViewerType;
   size: string;
   tool?: string;
@@ -72,6 +73,7 @@ async function filesBelow(directory: string, root: string): Promise<StoredEviden
     return [{
       id: evidenceId(relativePath),
       name: entry.name,
+      path: relativePath,
       type,
       size: formatSize(info.size),
       relativePath,
@@ -103,6 +105,7 @@ export async function getEvidenceManifest(caseId: string): Promise<EvidenceFileM
   return manifest.map((file) => ({
     id: file.id,
     name: file.name,
+    path: file.relativePath,
     type: file.type,
     size: file.size,
     ...(file.tool ? { tool: file.tool } : {}),

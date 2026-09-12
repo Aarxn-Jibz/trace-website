@@ -133,6 +133,16 @@ export function Workstation({ caseId, files, onClose }: { caseId: string; files:
   const beamId = React.useRef(0);
   const pendingMatch = React.useRef<number | null>(null);
   const reduce = useReducedMotion();
+  const fileGroups = React.useMemo(() => {
+    const groups = new Map<string, EvidenceFile[]>();
+    files.forEach((item) => {
+      const folder = (item.path ?? "").split("/").slice(0, -1).join("/");
+      groups.set(folder, [...(groups.get(folder) ?? []), item]);
+    });
+    return [...groups.entries()]
+      .sort(([left], [right]) => left === "" ? -1 : right === "" ? 1 : left.localeCompare(right))
+      .map(([folder, items]) => ({ folder, items }));
+  }, [files]);
   const searchable = Boolean(file && file.type !== "unsupported" && file.type !== "pcap" && file.type !== "image");
   const count = searchMeta?.total ?? 0;
   const before = React.useMemo(() => {
@@ -284,7 +294,7 @@ export function Workstation({ caseId, files, onClose }: { caseId: string; files:
         <div className="parchment-edge parchment-top" /><div className="parchment-edge parchment-bottom" />
         <div className="workstation">
           <header className="workstation-top"><div><span>TRACE</span> FORENSICS</div><span className="current-file"><span className="current-file-name">{file?.name ?? "NO FILE OPEN"}</span>{searchable && <button className="header-find" onClick={() => setSearchOpen(true)}><kbd>CTRL/CMD + F</kbd><span>TO SEARCH</span></button>}</span><button onClick={closeWorkstation} aria-label="Exit workstation"><X /></button></header>
-          <aside className="file-sidebar"><p>EVIDENCE</p>{files.map((item) => <button className={item.id === file?.id ? "active" : ""} onClick={() => choose(item)} key={item.id}><FileText /><span>{item.name}</span><small>{item.size}</small></button>)}</aside>
+          <aside className="file-sidebar"><p>EVIDENCE</p>{fileGroups.map(({ folder, items }) => <section className="file-group" key={folder || "root"}><h2>{folder ? folder.toUpperCase() : "CASE FILES"}</h2>{items.map((item) => <button className={item.id === file?.id ? "active" : ""} onClick={() => choose(item)} key={item.id}><FileText /><span>{item.name}</span><small>{item.size}</small></button>)}</section>)}</aside>
           <section className="viewer-panel" ref={panelRef}>
             <div className="viewer-toolbar"><span>{file?.type.toUpperCase() ?? "VIEWER"}</span><div>{file && <button onClick={closeFile} className="close-file" aria-label="Close file"><X /></button>}</div></div>
             <AnimatePresence mode="wait">{file ? <motion.div key={file.id} className="viewer-content" initial={{ opacity: 0, clipPath: "inset(0 100% 0 0)" }} animate={{ opacity: 1, clipPath: "inset(0 0 0 0)" }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}><ProtectedViewer className="protected-viewer"><FileViewer caseId={caseId} file={file} lines={lines} csvHeader={csvHeader} page={page} pageSize={pageSize} base={before} query={query} current={current} /></ProtectedViewer>{file.type !== "pcap" && file.type !== "unsupported" && file.type !== "image" && <div className="evidence-pager"><button onClick={() => gotoPage(page - 1)} disabled={page <= 1}>← PREVIOUS</button><span>PAGE {page} / {totalPages}</span><button onClick={() => gotoPage(page + 1)} disabled={page >= totalPages}>NEXT →</button></div>}</motion.div> : <motion.div key="empty" className="viewer-empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }}><FileText/><p>Select evidence to inspect</p></motion.div>}</AnimatePresence>
